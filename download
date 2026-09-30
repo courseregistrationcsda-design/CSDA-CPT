@@ -1,0 +1,9 @@
+# nothing here needs building, but keep the usual noise out
+node_modules/
+.vercel
+.DS_Store
+Thumbs.db
+*.log
+__pycache__/
+*.pyc
+.venv/
