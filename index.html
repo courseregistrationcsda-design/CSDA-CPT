@@ -460,14 +460,41 @@ textarea.finp{resize:vertical;min-height:62px;line-height:1.5}
   font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 
 @media print{
-  @page{size:A4 portrait;margin:13mm}
-  html,body{background:#fff!important;color:#000!important}
-  header,main,.scrim,.modal,.toast{display:none!important}
-  #printarea{display:block!important}
-  #printarea .prev{box-shadow:none;border-radius:0;padding:0;font-size:11px}
+  /* `auto` follows whatever paper the printer is loaded with — A4, Letter, Legal, A5.
+     Hard-coding A4 made Chrome shrink-or-clip the sheet on US Letter printers. */
+  @page{size:auto;margin:13mm}
+
+  /* While a modal is open the body is position:fixed and pushed up by a negative top
+     to hold the reader's scroll position. Printing in that state gives you page one
+     and nothing else, so every one of those properties is undone for print. */
+  html,body,body.locked{
+    position:static!important;top:auto!important;left:auto!important;right:auto!important;
+    width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;
+    overflow:visible!important;background:#fff!important;color:#000!important}
+
+  header,main,.scrim,.modal,.toast,.instpop{display:none!important}
+
+  #printarea{display:block!important;position:static!important;overflow:visible!important;
+    width:auto!important;height:auto!important;max-height:none!important}
+  #printarea .prev{box-shadow:none;border-radius:0;padding:0;font-size:11px;
+    width:auto;max-width:none;overflow:visible}
+
+  /* flow across sheets sensibly */
+  .prev thead{display:table-header-group}      /* column headings repeat on every sheet */
+  .prev tfoot{display:table-footer-group}
+  .prev tr,.prev .kvrow,.prev .sigs,.prev .pfoot,.prev .phead,.prev .totrow,
+  .prev .terms,.prev .badge2{break-inside:avoid;page-break-inside:avoid}
+  .prev h3{break-after:avoid;page-break-after:avoid}
+  .prev table{break-before:auto;page-break-before:auto}
+  .prev{orphans:3;widows:3}
+
+  /* keep the tinted rows and rules that carry meaning */
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
   .prev .phead{border-bottom:2px solid #000}
   .prev .sigs{margin-top:34px}
-  .pagebreak{page-break-before:always}
+  .prev .pdoc{white-space:normal}              /* never force a sheet wider than the paper */
+  .pagebreak{page-break-before:always;break-before:page}
 }
 
 @media (max-width:900px){
@@ -1171,6 +1198,35 @@ function unlockPage(){
   document.body.style.top = '';
   try { window.scrollTo(0, pageY); } catch(err){}
 }
+/* Print safely from inside a modal: drop the scroll lock, print, then put the reader
+   back exactly where they were. Chrome renders a position:fixed body as a single page,
+   so unlocking is what actually recovers the missing sheets; the CSS above is the belt
+   to this pair of braces. */
+var printRestore = null;
+function printDoc(){
+  var locked = document.body.classList.contains('locked');
+  var y = pageY;
+  if (locked) {
+    document.body.classList.remove('locked');
+    document.body.style.top = '';
+    try { window.scrollTo(0, y); } catch(e){}
+  }
+  printRestore = function(){
+    printRestore = null;
+    if (!locked || !anyOpen()) return;
+    pageY = y;
+    document.body.style.top = (-y) + 'px';
+    document.body.classList.add('locked');
+  };
+  /* onafterprint is the reliable signal; the timer is the fallback for browsers
+     that never fire it (older Safari). */
+  setTimeout(function(){
+    try { window.print(); } catch(e){}
+    setTimeout(function(){ if (printRestore) printRestore(); }, 800);
+  }, 60);
+}
+window.addEventListener('afterprint', function(){ if (printRestore) printRestore(); });
+
 function closeAll(){
   scrim.classList.remove('on'); modal.classList.remove('on');
   admin.classList.remove('on'); enrollM.classList.remove('on');
@@ -1826,7 +1882,7 @@ document.getElementById('aBody').addEventListener('click', function(e){
       loadRecord(rp);
       document.getElementById('printarea').innerHTML = buildDoc(quote(E.courses, E.promos, E.plan));
       E = keep; eStep = keepStep;
-      setTimeout(function(){ window.print(); }, 60);
+      printDoc();
     }
     return;
   }
@@ -2620,7 +2676,7 @@ document.getElementById('eBody').addEventListener('click', function(e){
   else if (act === 'print') {
     var r = quote(E.courses, E.promos, E.plan);
     document.getElementById('printarea').innerHTML = buildDoc(r);
-    setTimeout(function(){ window.print(); }, 60);
+    printDoc();
   }
 });
 
@@ -3177,5 +3233,5 @@ if (IS_COPY) setTimeout(autoInstall, 400);
 })();
 })();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4375135b84db5bc',t:'MTc5MDgxNDE5MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
