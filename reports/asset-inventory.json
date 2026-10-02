@@ -1,0 +1,49 @@
+{
+  "generatedAt": "2026-10-02T16:48:31.634Z",
+  "htmlBytes": 565801,
+  "embeddedDecodedBytes": 108825,
+  "assets": [
+    {
+      "name": "inline-favicon",
+      "type": "png",
+      "decodedBytes": 7811,
+      "base64Characters": 10416,
+      "sha256": "56f0f93f328fcb1f41430f9a27db9735bfd4dd9774d1fdc3ee494c9792b25e13"
+    },
+    {
+      "name": "splash-cpt-logo",
+      "type": "png",
+      "decodedBytes": 40193,
+      "base64Characters": 53592,
+      "sha256": "b979d5ea8445e15b987e846a8a1bcf389c730717a9de030e481fe9f3bef242d8"
+    },
+    {
+      "name": "runtime-icon-192",
+      "type": "webp",
+      "decodedBytes": 7070,
+      "base64Characters": 9428,
+      "sha256": "c567f324ffb7a9d078c66af43f25a64aa4b797992db38f92f939e5e8cfb33be9"
+    },
+    {
+      "name": "runtime-icon-512",
+      "type": "webp",
+      "decodedBytes": 24854,
+      "base64Characters": 33140,
+      "sha256": "a993bc7692ae2c9a3d5827bd39260009d6425eb332e7a9380181174367e94719"
+    },
+    {
+      "name": "csda-logo-mark",
+      "type": "png",
+      "decodedBytes": 5514,
+      "base64Characters": 7352,
+      "sha256": "7d5f8ac4ee8d14b7c5b51b45a85b8bd29aa98f13376f6b981cfb07fae910ae6c"
+    },
+    {
+      "name": "csda-logo-full",
+      "type": "png",
+      "decodedBytes": 23383,
+      "base64Characters": 31180,
+      "sha256": "1646c8be9672c0c9388944b88471399822fa48f94beef1438fecbeddd94fa127"
+    }
+  ]
+}

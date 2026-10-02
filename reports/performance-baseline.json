@@ -1,0 +1,112 @@
+{
+  "generatedAt": "2026-10-02T16:42:42.639Z",
+  "cacheVersion": "csda-toolkit-d2bf1091a14f",
+  "mainDocument": {
+    "bytes": 565801,
+    "gzipBytes": 229929,
+    "brotliBytes": 203068,
+    "inlineCssBytes": 79164,
+    "inlineJavaScriptBytes": 415894,
+    "embeddedImageCount": 6,
+    "embeddedImageDecodedBytes": 108825,
+    "mediaQueryCount": 18,
+    "keyframeCount": 17,
+    "externalScriptCount": 0,
+    "externalStylesheetCount": 0
+  },
+  "embeddedImages": [
+    {
+      "index": 1,
+      "type": "png",
+      "base64Characters": 10416,
+      "decodedBytes": 7811
+    },
+    {
+      "index": 2,
+      "type": "png",
+      "base64Characters": 53592,
+      "decodedBytes": 40193
+    },
+    {
+      "index": 3,
+      "type": "webp",
+      "base64Characters": 9428,
+      "decodedBytes": 7070
+    },
+    {
+      "index": 4,
+      "type": "webp",
+      "base64Characters": 33140,
+      "decodedBytes": 24854
+    },
+    {
+      "index": 5,
+      "type": "png",
+      "base64Characters": 7352,
+      "decodedBytes": 5514
+    },
+    {
+      "index": 6,
+      "type": "png",
+      "base64Characters": 31180,
+      "decodedBytes": 23383
+    }
+  ],
+  "files": [
+    {
+      "file": "index.html",
+      "bytes": 565801,
+      "sha256": "d87d765557adc9827afa2cdb0e922b71c486ef49f74827cfb283a055abbf6282"
+    },
+    {
+      "file": "sw.js",
+      "bytes": 2839,
+      "sha256": "7246f3311b0b83fc254f76ae6f2b0bc84b95df008ec2e7f028e6cd36611f6315"
+    },
+    {
+      "file": "manifest.webmanifest",
+      "bytes": 1037,
+      "sha256": "ce875c9c0d4679add41d0209166a95044fb013e88fecf3f5364322ff4209b12d"
+    },
+    {
+      "file": "vercel.json",
+      "bytes": 1700,
+      "sha256": "8f5e7d7e16e670a2af8d34e657b8a5be5fbe838701e0e5c8ba63102ca1e9bd25"
+    },
+    {
+      "file": "favicon.ico",
+      "bytes": 19145,
+      "sha256": "92cc10b37f51ba0e118eefc4f8d6f35f7c6b2e68e57f946c2c6ac9c06f1785a1"
+    },
+    {
+      "file": "icons/icon-192.png",
+      "bytes": 42662,
+      "sha256": "681e00259855c22ec5290e2da14e6fa5ef94524bd065aca454c9b8ebd3ee0b0b"
+    },
+    {
+      "file": "icons/icon-192.webp",
+      "bytes": 8860,
+      "sha256": "45afa96f01325532bdb9453add4d0d1eedf9d9da983514694632cb7f45a0a410"
+    },
+    {
+      "file": "icons/icon-512.png",
+      "bytes": 254876,
+      "sha256": "93f918507029208472fb42f97b864fe5c257c2daf1ad58998d4f3e7287fba53b"
+    },
+    {
+      "file": "icons/icon-512.webp",
+      "bytes": 31502,
+      "sha256": "94b0ecf4d40cd2a5c8efc35d46aa0623c8fc0bd2c7ca878b59999e407b3887d7"
+    },
+    {
+      "file": "icons/maskable-512.png",
+      "bytes": 150328,
+      "sha256": "f411c032f7010b09afb9d6f4b797f42d9f629a2aa359968419f069ecb4b5d1e4"
+    },
+    {
+      "file": "icons/apple-touch-icon.png",
+      "bytes": 37937,
+      "sha256": "c7a02b0883ec6169a79b13747ee49d6fa79cb9d4acf8aa0611a4e2baf140fe17"
+    }
+  ]
+}

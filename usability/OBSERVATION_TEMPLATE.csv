@@ -1,0 +1,7 @@
+session_id,participant_role,device,task_id,task_name,completed_unassisted,completion_seconds,error_count,backtrack_count,assistance_count,confidence_1_to_5,observation,severity,follow_up
+S01,Enrollment staff A,,T1,Find and review course,,,,,,,,,
+S01,Enrollment staff A,,T2,Prepare quote,,,,,,,,,
+S01,Enrollment staff A,,T3,Adult enrollment,,,,,,,,,
+S01,Enrollment staff A,,T4,Minor enrollment,,,,,,,,,
+S01,Enrollment staff A,,T5,Facility session,,,,,,,,,
+S01,Enrollment staff A,,T6,Administrator and backup,,,,,,,,,

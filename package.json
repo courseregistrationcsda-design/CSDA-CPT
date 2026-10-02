@@ -1,0 +1,24 @@
+{
+  "name": "csda-pricing-toolkit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Offline-capable pricing, quotation, enrollment, administration and facility-rental toolkit for CSDA.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "smoke": "node tools/smoke-test.js",
+    "smoke:browser": "node tools/smoke-test.js --browser",
+    "baseline": "node tools/performance-baseline.js",
+    "inventory": "node tools/asset-inventory.js",
+    "version-cache": "node tools/version-cache.js",
+    "build:hosted": "node tools/build-hosted.js",
+    "build": "npm run version-cache && npm run inventory && npm run build:hosted",
+    "test": "npm run smoke"
+  },
+  "devDependencies": {
+    "clean-css": "^5.3.3",
+    "puppeteer": "^24.43.1",
+    "terser": "^5.51.2"
+  }
+}

@@ -1,139 +1,115 @@
 # CSDA Pricing Toolkit
 
-Course pricing, quotations, bundle builder, payment schedules and student enrollments for
-**Cordillera School of Digital Arts, Inc.** (Baguio City).
+Offline-capable course pricing, quotations, payment schedules, enrollment, administration, and Shared Service Facility operations for **Cordillera School of Digital Arts, Inc.**
 
-The whole application is `index.html` — one self-contained file with hand-written CSS,
-vanilla JavaScript and every image inlined. No build step, no dependencies, no frameworks,
-no network calls. It runs identically from a web server, from a USB stick, or from a laptop
-with the Wi-Fi switched off.
+The readable application source remains a self-contained `index.html`. The production build generates a smaller hosted version with cacheable image assets while preserving an on-demand standalone HTML download.
 
----
+## Requirements
 
-## Deploy to Vercel
+- Node.js 20 or later
+- npm 10 or later
+- A modern Chromium, Firefox, or Safari browser
 
-### Option A — from the GitHub UI (no terminal)
-
-1. Create a new repository on GitHub, e.g. `csda-pricing-toolkit`.
-2. Upload the **contents** of this folder (not the folder itself) to the repository root.
-   `index.html` must sit at the top level.
-3. Go to [vercel.com/new](https://vercel.com/new) and import that repository.
-4. Framework preset: **Other**. Leave *Build Command* and *Output Directory* empty —
-   this is a static site.
-5. Press **Deploy**. It takes about twenty seconds.
-
-### Option B — from the command line
+## Local setup
 
 ```bash
-cd csda-toolkit-site
-git init
-git add .
-git commit -m "CSDA Pricing Toolkit"
-git branch -M main
-git remote add origin https://github.com/<you>/csda-pricing-toolkit.git
-git push -u origin main
-
-npx vercel --prod        # or import the repo at vercel.com/new
+npm ci --ignore-scripts
+npm run smoke
+npm run build
 ```
 
-### After the first deploy
+Open `index.html` directly for the standalone source, or serve `release/hosted` after building to inspect the production artifact.
 
-Vercel gives you a URL such as `https://csda-pricing-toolkit.vercel.app`.
+## Commands
 
-1. Open `index.html` and replace the placeholder domain in the four social-preview tags
-   (`og:url`, `og:image`, `twitter:image`, and `rel="canonical"`) with your real URL, then
-   push again. Everything else works untouched — these tags only affect link previews.
-2. Open the site in Chrome or Edge and use **⋮ → Cast, save and share → Install page as app**.
-   Because the site serves a real manifest over HTTPS, the browser installs it as a proper
-   application with the CSDA icon, its own window and its own Start-menu / Dock entry.
+| Command | Purpose |
+|---|---|
+| `npm run smoke` | Static, syntax, HTTP, asset, and accessibility checks |
+| `npm run smoke:browser` | Optional Puppeteer interaction and responsive checks |
+| `npm run baseline` | Measure source HTML, gzip, Brotli, CSS, JavaScript, and embedded images |
+| `npm run inventory` | Generate embedded-asset inventory reports |
+| `npm run version-cache` | Derive the service-worker cache name from content hashes |
+| `npm run build:hosted` | Generate the hosted and standalone release artifacts |
+| `npm run build` | Version cache, inventory assets, and build the hosted release |
+| `npm test` | Run the standard smoke suite |
 
----
+`smoke:browser` needs Chrome/Chromium runtime libraries. Standard CI does not download or launch Chromium.
 
-## What is in this folder
+## GitHub upload
+
+```bash
+git init
+git add .
+git commit -m "Prepare CSDA Pricing Toolkit for deployment"
+git branch -M main
+git remote add origin https://github.com/<account>/<repository>.git
+git push -u origin main
+```
+
+Do not commit `release/`, `node_modules/`, `.vercel/`, local environment files, exported backups, real enrollment data, or test recordings. Generated release files are created by CI/Vercel.
+
+GitHub Actions runs smoke checks and a production build for pushes and pull requests to `main`.
+
+## Vercel deployment
+
+1. Import the GitHub repository in Vercel.
+2. Choose **Other** as the framework preset.
+3. Keep the repository’s `vercel.json` settings. It already defines:
+   - Build command: `npm run build`
+   - Output directory: `release/hosted`
+   - Security and cache headers
+4. Deploy.
+
+The production build contains:
+
+- `index.html` — minified hosted application
+- `assets/` — content-hashed images
+- `standalone.html` — self-contained offline download
+- `sw.js`, manifest, favicon, and PWA icons
+
+After assigning the final domain, update the canonical and social-preview URLs in source `index.html`, rebuild, run smoke checks, and redeploy. See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for the release checklist and rollback procedure.
+
+## Repository layout
 
 | Path | Purpose |
 |---|---|
-| `index.html` | **The application.** Edit this file directly; there is nothing to compile. |
-| `manifest.webmanifest` | Web-app manifest: name, colours, icons, and two app shortcuts (Enroll, Admin). |
-| `sw.js` | Service worker. Network-first for pages, cache-first for icons, so the site works offline. |
-| `icons/` | App icons: 192 and 512 in WebP and PNG, a maskable 512, and a 180px Apple touch icon. |
-| `favicon.ico` | Multi-resolution favicon (16 → 64). |
-| `vercel.json` | Static config: clean URLs, cache headers, correct manifest MIME type, security headers. |
-| `.gitignore` | Keeps editor and OS clutter out of the repository. |
+| `index.html` | Single source of truth for the application |
+| `sw.js` | Offline service worker; cache name is generated automatically |
+| `manifest.webmanifest` | PWA metadata and shortcuts |
+| `icons/`, `favicon.ico` | PWA and browser icons |
+| `tools/` | Build, smoke, performance, inventory, and cache-version scripts |
+| `docs/planning/` | UI/UX audit and phased improvement backlog |
+| `docs/testing/` | Regression documentation |
+| `docs/privacy/` | Local retention and sensitive-data guidance |
+| `reports/` | Implementation, performance, and asset reports |
+| `usability/` | Synthetic-data usability-testing package |
+| `.github/workflows/` | GitHub Actions validation |
+| `vercel.json` | Vercel build/output and response-header configuration |
 
-Seven items. Nothing else is required to deploy.
+## Important pricing rules
 
-> **If you edit the icons**, bump `CACHE` in `sw.js` (e.g. `csda-toolkit-v2`) so returning
-> visitors pick up the new files instead of the cached ones.
+- Short courses and workshops do not receive Full Payment or Bundle discounts.
+- Their eligible discounts are Group of 3+ students and Early Bird.
+- Discount options show the resulting client price and amount saved directly in each selection control.
+- Discounts do not combine unless an authorized administrator explicitly enables stacking.
 
----
+## Data, privacy, and backups
 
-## Using the toolkit
+Operational data is stored in the current browser profile. There is no application database or server-side record recovery. Clearing browser data, changing profiles, or losing the device can remove access to records.
 
-**Feed.** A category directory with live counts on the left, course cards on the right.
-Search with `/`; `Esc` closes a panel, then clears the search.
+Use **Admin → CSV & Backup → Download full backup** and store exports only in an approved, access-controlled location. Review:
 
-**Quote modal.** Click any course to build a quotation: add courses to a bundle (10% comes
-off automatically at three or more), see the rate breakdown, compare every promo side by
-side, run the eligibility check, and read each payment plan's schedule with per-stage
-amounts and late-interest exposure.
+- [`docs/privacy/DATA_RETENTION_PRIVACY.md`](docs/privacy/DATA_RETENTION_PRIVACY.md)
+- [`docs/privacy/SENSITIVE_DATA_REGISTER.md`](docs/privacy/SENSITIVE_DATA_REGISTER.md)
 
-**Enroll.** The *Enroll student* button opens a two-step form: student and guardian details,
-course selection with live bundle pricing, a generated class schedule, and a payment plan.
-Step two is a printable quotation and enrollment form that saves to PDF and stores a record
-inside the app.
+The administrator password is a workflow gate, not encryption. Production use requires an approved staff device, individual OS account, automatic screen locking, a private browser profile, current security updates, and controlled physical access.
 
-**Scheduling.** Sessions run every other day and never on a Sunday. *Regenerate all dates*
-asks whether Saturdays should be included. Any date can be typed, picked from the calendar,
-or nudged a day at a time with the `‹ ›` buttons.
+The app keeps a limited set of aggregate workflow counters in the local browser for deployment evaluation. No values are transmitted. Counters contain allowlisted event names, counts, and the most recent calendar day only; they exclude names, typed text, record IDs, contact details, payment data, receipts, and password attempts. See [`usability/PRIVACY_SAFE_EVENT_SCHEMA.md`](usability/PRIVACY_SAFE_EVENT_SCHEMA.md).
 
-**Admin.** The gear button; password `csda2026` (change it under *Promos & Discounts →
-global rules*). Six tabs: Courses, Categories, Promos & Discounts, Payment Plans,
-Enrollments, and CSV & Backup.
+## Standalone/offline copy
 
-**Get app.** Downloads a multi-resolution `.ico` plus a desktop shortcut carrying the CSDA
-icon, and fires the browser's own install prompt when one is available.
+The hosted app’s **Get app → Download app file** action downloads `standalone.html`. It contains all required visual assets and works from local storage or a USB drive without a service worker. The hosted PWA uses the service worker for repeat-load offline support.
 
-**Download the app file.** Inside the *Get app* panel. The page writes a standalone copy of
-itself — every asset inlined, server-only tags stripped — so it keeps working from a folder
-or a USB stick with no internet at all.
+## Current verification
 
----
-
-## Data and privacy
-
-Everything lives in the browser's `localStorage` on the machine where it was entered.
-Nothing is uploaded; there is no server, database or analytics of any kind. Student records
-therefore stay on the device that captured them.
-
-Two consequences worth planning around:
-
-* Clearing site data wipes the catalogue edits and saved enrollments.
-* Another computer starts from the built-in defaults.
-
-Use **Admin → CSV & Backup → Export JSON** to take a snapshot, and **Import JSON** to restore
-it or move it to another machine. The catalogue can also be round-tripped as CSV so a trainer
-can edit it in a spreadsheet offline.
-
----
-
-## Notes and limits
-
-* **Storage can be blocked.** In a sandboxed iframe `localStorage` throws; the app falls back
-  to in-memory storage so it still runs, but changes are lost on reload. That is why Export /
-  Import exists.
-* **A saved `.html` cannot choose its own icon.** Windows and macOS assign icons by file type.
-  The *Get app* launcher works around this by giving you a shortcut file, which *can* name its
-  own icon — keep the `.ico` and the shortcut in the same folder. On macOS a `.webloc` still
-  needs the icon dragged in through *Get Info*; use *Add to Dock* instead if that matters.
-* **The downloaded single-file copy has no service worker.** Browsers refuse to register one
-  from a `file://` page. It needs no network anyway — every asset is already inside it.
-
----
-
-## Source figures
-
-Pricing, contact hours and page citations come from the official CSDA pricing document and
-the Homeschool TLE proposal. Category headers carry their source page, and any course whose
-effective hourly rate drifts from its category baseline is flagged in the card and in the
-quote.
+The latest automated smoke result is recorded in the phase reports. Browser-driven checks are optional because their operating-system library requirements are not available in every CI/sandbox environment.
