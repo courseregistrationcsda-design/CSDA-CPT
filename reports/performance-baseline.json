@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-10-02T16:42:42.639Z",
-  "cacheVersion": "csda-toolkit-d2bf1091a14f",
+  "generatedAt": "2026-10-02T17:59:10.192Z",
+  "cacheVersion": "csda-toolkit-35ff7ce93d0f",
   "mainDocument": {
-    "bytes": 565801,
-    "gzipBytes": 229929,
-    "brotliBytes": 203068,
+    "bytes": 595466,
+    "gzipBytes": 231651,
+    "brotliBytes": 204268,
     "inlineCssBytes": 79164,
-    "inlineJavaScriptBytes": 415894,
+    "inlineJavaScriptBytes": 445559,
     "embeddedImageCount": 6,
     "embeddedImageDecodedBytes": 108825,
     "mediaQueryCount": 18,
@@ -55,13 +55,13 @@
   "files": [
     {
       "file": "index.html",
-      "bytes": 565801,
-      "sha256": "d87d765557adc9827afa2cdb0e922b71c486ef49f74827cfb283a055abbf6282"
+      "bytes": 595466,
+      "sha256": "83a3a513c1723147f64f00b4ad7f0ea542249877d83b1d3e81c5a204f3fc00a6"
     },
     {
       "file": "sw.js",
       "bytes": 2839,
-      "sha256": "7246f3311b0b83fc254f76ae6f2b0bc84b95df008ec2e7f028e6cd36611f6315"
+      "sha256": "29898d723d8eccc426d15d3b972d1348baecb3db4b5dc8eb9066bed30237e192"
     },
     {
       "file": "manifest.webmanifest",

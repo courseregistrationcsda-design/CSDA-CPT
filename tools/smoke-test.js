@@ -97,6 +97,9 @@ async function staticAndHttpChecks(port) {
   check(/Workflow gate only/.test(html), 'Administrative security expectation present');
   check(/USAGE_EVENTS/.test(html) && /csda_usage_counts/.test(html), 'Privacy-safe local workflow counters present');
   check(!/trackEvent\([^)]*(query|student|guardian|payment|receipt)/.test(html), 'Usage counters avoid sensitive values');
+  check(/catalogVersion:\s*'course-list-2026-10'/.test(html), '2026 uploaded course catalogue present');
+  check(/\"code\": \"FND101\"/.test(html) && /\"code\": \"SWTA12\"/.test(html), 'Course-list boundary codes present');
+  check(/uploaded 2026 course sheet is authoritative/.test(html), 'Saved-data catalogue migration present');
 
   /* Only inspect the initial DOM markup. Generated HTML strings inside JavaScript
      legitimately reuse field IDs because only one tab/panel exists at a time. */
