@@ -1,17 +1,17 @@
 # Performance Baseline
 
-Generated: 2026-10-08T08:48:05.291Z
-Service-worker cache: `csda-toolkit-7f58dcedf4c7`
+Generated: 2026-10-08T11:03:56.916Z
+Service-worker cache: `csda-toolkit-62d7a7b322c0`
 
 ## Main document
 
 | Metric | Value |
 |---|---:|
-| Raw HTML | 397,917 bytes |
-| Gzip level 9 | 182,635 bytes |
-| Brotli quality 11 | 167,430 bytes |
+| Raw HTML | 398,017 bytes |
+| Gzip level 9 | 182,671 bytes |
+| Brotli quality 11 | 167,682 bytes |
 | Inline CSS | 91,238 bytes |
-| Inline JavaScript | 234,896 bytes |
+| Inline JavaScript | 234,996 bytes |
 | Embedded images | 6 |
 | Embedded image decoded bytes | 108,825 bytes |
 | Media queries | 26 |
@@ -33,7 +33,7 @@ Service-worker cache: `csda-toolkit-7f58dcedf4c7`
 
 | File | Bytes |
 |---|---:|
-| `index.html` | 397,917 |
+| `index.html` | 398,017 |
 | `sw.js` | 3,083 |
 | `manifest.webmanifest` | 1,037 |
 | `vercel.json` | 1,700 |

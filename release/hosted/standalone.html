@@ -4145,7 +4145,8 @@ function closeWithDataCheck(kind){
 scrim.onclick = closeGuarded;
 document.getElementById('mClose').onclick = closeAll;
 document.getElementById('aClose').onclick=function(){logAction('Administrator access closed',staffName||'Unknown');save();authed=false;closeWithDataCheck('admin');};
-document.getElementById('monitorClose').onclick = closeLifecycleMonitor;
+/* Resolve the lifecycle-module function when clicked; that module loads later. */
+document.getElementById('monitorClose').onclick = function(){ closeLifecycleMonitor(); };
 document.getElementById('eClose').onclick = function(){ closeWithDataCheck('enroll'); };
 
 /* ================= QUOTE MODAL ================= */

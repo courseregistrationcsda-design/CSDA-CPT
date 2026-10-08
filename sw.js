@@ -8,7 +8,7 @@
  * Bump CACHE on every deploy; old caches are dropped on activate.
  */
 
-var CACHE = 'csda-toolkit-7f58dcedf4c7';
+var CACHE = 'csda-toolkit-62d7a7b322c0';
 
 var PRECACHE = [
   '/',

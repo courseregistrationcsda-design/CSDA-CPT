@@ -228,6 +228,7 @@ async function staticAndHttpChecks(port) {
     const result = spawnSync(process.execPath, ['--check', path.join(moduleDir, name)], { encoding:'utf8' });
     check(result.status === 0, `Module ${name} parses`, (result.stderr || '').trim());
   }
+  check(/monitorClose'\)\.onclick\s*=\s*function\(\)\{\s*closeLifecycleMonitor\(\)/.test(htmlDocument) && !/monitorClose'\)\.onclick\s*=\s*closeLifecycleMonitor/.test(htmlDocument), 'Late lifecycle handler resolves only after its module loads');
   check(/modules\/data-store\.js/.test(htmlDocument) && /modules\/enrollment\.js/.test(htmlDocument) && /modules\/lifecycle-audit\.js/.test(htmlDocument) && /modules\/backup-engine\.js/.test(htmlDocument) && /modules\/admin-interface\.js/.test(htmlDocument) && /modules\/accessibility\.js/.test(htmlDocument) && /modules\/domain-rules\.js/.test(htmlDocument), 'Major application concerns load as separate modules');
   const swSource = fs.readFileSync(path.join(ROOT,'sw.js'),'utf8');
   check(fs.readdirSync(moduleDir).filter(f => f.endsWith('.js')).every(f => swSource.includes('/modules/' + f)), 'Application modules are included in offline precache');
