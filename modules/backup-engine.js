@@ -76,7 +76,7 @@ function mergeBackupData(incoming){
 function applySecureBackup(mode){
   if(!secureBackupPreview)return;var payload=secureBackupPreview,summary=backupSummary(payload);
   var receivingAuth=DB.cfg&&DB.cfg.auth;DB=mode==='merge'?mergeBackupData(payload.data):JSON.parse(JSON.stringify(payload.data));migrateDB();if(receivingAuth){DB.cfg.auth=receivingAuth;delete DB.cfg.pwd;}save();
-  store.set('csda_backup_at',payload.exportedAt||new Date().toISOString());store.set('csda_backup_changes','0');
+  store.set('csda_backup_at',payload.exportedAt||new Date().toISOString());store.set('csda_backup_changes','0');try{localStorage.removeItem('csda_restore_recommended');}catch(e){delete mem.csda_restore_recommended;}
   logAction((mode==='merge'?'Merged':'Restored')+' encrypted session backup containing '+summary.students+' enrollments',staffName);save();secureBackupPreview=null;buildDir();renderFeed();renderAdmin();toast(mode==='merge'?'Backup merged with this app':'Complete app session restored');
 }
 

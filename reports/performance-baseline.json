@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-10-08T11:57:17.141Z",
-  "cacheVersion": "csda-toolkit-18253859ff57",
+  "generatedAt": "2026-10-08T12:59:56.305Z",
+  "cacheVersion": "csda-toolkit-036d0fb20a68",
   "mainDocument": {
-    "bytes": 400189,
-    "gzipBytes": 183240,
-    "brotliBytes": 168128,
-    "inlineCssBytes": 91238,
-    "inlineJavaScriptBytes": 237168,
+    "bytes": 406030,
+    "gzipBytes": 184872,
+    "brotliBytes": 169194,
+    "inlineCssBytes": 91797,
+    "inlineJavaScriptBytes": 241519,
     "embeddedImageCount": 6,
     "embeddedImageDecodedBytes": 108825,
-    "mediaQueryCount": 26,
+    "mediaQueryCount": 27,
     "keyframeCount": 20,
     "externalScriptCount": 8,
     "externalStylesheetCount": 0
@@ -55,13 +55,13 @@
   "files": [
     {
       "file": "index.html",
-      "bytes": 400189,
-      "sha256": "a0a4d68f4673d7ea11fdb02d3657464d918c11c21744875d38528a33ba7e1da4"
+      "bytes": 406030,
+      "sha256": "e46005ae1a3495fdf6eccf1697eb021f44db39281ebc86bd2fb0c9fe583c54fc"
     },
     {
       "file": "sw.js",
       "bytes": 3196,
-      "sha256": "6f76e3c798d0614820372251eb72243d7cb8adde54bf94b7f18e0a359e628eb4"
+      "sha256": "d3c3d7590f5d3fc5116e84f638059a68ad5af6b5b71ffb158e613b1a186da289"
     },
     {
       "file": "manifest.webmanifest",
@@ -85,13 +85,13 @@
     },
     {
       "file": "modules/admin-interface.js",
-      "bytes": 115902,
-      "sha256": "949ee8fd5bd1a1ca777b0c808316dc60cd801d3ddfa34eedfcf13fd4e88b8a19"
+      "bytes": 116407,
+      "sha256": "c2620dd1c35721d6682f99392df52401ea90367a0e4eb6bbab19d44911fff259"
     },
     {
       "file": "modules/backup-engine.js",
-      "bytes": 17588,
-      "sha256": "f72bc5a3e63d49d744c14becbe2b73af8ee2c6a220790f17f8378080dbcb4d2b"
+      "bytes": 17691,
+      "sha256": "ed94a56af5a07b48df7e48d6529ff22ba8dc27c6c466f340b4be7c2a410e27e0"
     },
     {
       "file": "modules/data-store.js",
@@ -105,8 +105,8 @@
     },
     {
       "file": "modules/enrollment.js",
-      "bytes": 97076,
-      "sha256": "ca650ce3928fa6a74235bbbfa7c7bf7c36eb1ef6260943ec94d5c54b5ae5fbbc"
+      "bytes": 101756,
+      "sha256": "dc1eccae65f648556decfe707ace4963cde0c49012d4b5b32bf77f426ee940c9"
     },
     {
       "file": "modules/guide-search.js",
@@ -115,8 +115,8 @@
     },
     {
       "file": "modules/lifecycle-audit.js",
-      "bytes": 23586,
-      "sha256": "fd308e7d6645e281b13a9871d5c9132698fb4f09774013ab7245bc1fbf93abf6"
+      "bytes": 23662,
+      "sha256": "3377d8deb02a895381df09861581bb1c847f34396f8500a49cee064db6701c55"
     },
     {
       "file": "icons/icon-192.png",

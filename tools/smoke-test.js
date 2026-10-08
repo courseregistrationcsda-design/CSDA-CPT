@@ -154,7 +154,11 @@ async function staticAndHttpChecks(port) {
   check(/adminCompletionAudits[\s\S]{0,300}localeCompare/.test(html), 'Completion Audit queue is sorted oldest first');
   check(/CORDILLERA SCHOOL OF DIGITAL ARTS, INC\. 2026/.test(html) && !/Nino Jose B\. Seriosa/.test(html), 'General footer uses the school name and year without creator attribution');
   check(/Workflow map/.test(html) && /Completion Audit gate model/.test(html) && /application\/pdf/.test(html) && /General Administrative Guidelines PDF/.test(html), 'Detailed guidelines PDF is embedded in Admin');
+  check(/guidelineSupplementOpen/.test(html) && /data-guidetoggle/.test(html) && /Show other guide/.test(html) && /Hide other guide/.test(html) && /id=\\?"guidelineSupplement\\?"[^>]*hidden/.test(html), 'Other guide is hidden by default and has explicit Show/Hide control below the PDF');
   check(/autoAllocateTrainerSessions/.test(html) && /trainerIds/.test(html) && /two trainers = 50\/50/.test(html) && /courseEndingLabel/.test(html), 'Generated calendar supports equal multi-trainer allocation and course boundaries');
+  check(/data-course-trainer/.test(html) && /courseTrainers/.test(html) && /generated sessions inherit/.test(html), 'Each selected course accepts an immediate default trainer');
+  check(/openEmbeddedCamera/.test(html) && /getUserMedia/.test(html) && /cameraCapture/.test(html) && /data-vcamera/.test(html) && /data-refundcamera/.test(html), 'Embedded camera supports payment and refund receipt capture');
+  check(/studentPhotoPane/.test(html) && /student-camera/.test(html) && /studentPhotoZoom/.test(html) && /studentPhotoX/.test(html) && /studentPhotoY/.test(html) && /Record only/.test(html), 'Student record photo supports upload capture zoom and placement without form output');
   check(/capture=\\?"environment/.test(html) && /camera=\(self\)/.test(fs.readFileSync(path.join(ROOT,'vercel.json'),'utf8')), 'Receipt uploads can invoke the rear camera on supported devices');
   check(/guardedUninstall/.test(html) && /pre-uninstall-backup/.test(html) && /localStorage\.clear/.test(html), 'Removal requires Admin verification and mandatory backup before local clearing');
   check(/auditAttendance/.test(html) && /trainer\.attendance\|\|'Complete'/.test(html) && !/id="auditUtilization"/.test(html), 'Attendance defaults complete and seat utilization is removed');
@@ -162,7 +166,8 @@ async function staticAndHttpChecks(port) {
   check(/data-auditedit/.test(html) && /Completion audit edit/.test(html), 'Audit full enrollment editing present');
   check(/Certificate of Completion/.test(html) && /Certificate Clearance Record/.test(html) && /data-certprint/.test(html), 'Two printable clearance documents present');
   check(/PBKDF2/.test(html) && /AES-GCM/.test(html) && /backup-out-secure/.test(html), 'Password-encrypted full session backup present');
-  check(/backup-restore-replace/.test(html) && /backup-restore-merge/.test(html) && /backupSummary/.test(html), 'Backup inspection and restore choices present');
+  check(/Import Session ZIP/.test(html) && /validateNormalizedZIP/.test(html) && /decryptFullBackup/.test(html) && /backup-restore-replace/.test(html) && /backup-restore-merge/.test(html) && /backupSummary/.test(html), 'Session ZIP is extracted, adapted, previewed, and offers Replace or Merge');
+  check(/csda_restore_recommended/.test(html) && /Restore recommended/.test(html) && /removeItem\('csda_restore_recommended'/.test(html), 'Guarded removal records and completed restore clears the restore recommendation');
   check(/id="catFilter"/.test(html) && /Filter course categories/.test(html), 'Landing category dropdown present');
   check(/migrateIndividualTrainers/.test(html) && /split\(\/\\s\*\\\/\\s\*\//.test(html), 'Combined trainers migrate to individual entries');
   check(/trainerAssignments/.test(html) && /credited hours/.test(html) && /trainerTimeSummary/.test(html), 'Multi-trainer time ledger present');

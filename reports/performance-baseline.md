@@ -1,20 +1,20 @@
 # Performance Baseline
 
-Generated: 2026-10-08T11:57:17.141Z
-Service-worker cache: `csda-toolkit-18253859ff57`
+Generated: 2026-10-08T12:59:56.305Z
+Service-worker cache: `csda-toolkit-036d0fb20a68`
 
 ## Main document
 
 | Metric | Value |
 |---|---:|
-| Raw HTML | 400,189 bytes |
-| Gzip level 9 | 183,240 bytes |
-| Brotli quality 11 | 168,128 bytes |
-| Inline CSS | 91,238 bytes |
-| Inline JavaScript | 237,168 bytes |
+| Raw HTML | 406,030 bytes |
+| Gzip level 9 | 184,872 bytes |
+| Brotli quality 11 | 169,194 bytes |
+| Inline CSS | 91,797 bytes |
+| Inline JavaScript | 241,519 bytes |
 | Embedded images | 6 |
 | Embedded image decoded bytes | 108,825 bytes |
-| Media queries | 26 |
+| Media queries | 27 |
 | Keyframe declarations | 20 |
 | External scripts/stylesheets | 8/0 |
 
@@ -33,19 +33,19 @@ Service-worker cache: `csda-toolkit-18253859ff57`
 
 | File | Bytes |
 |---|---:|
-| `index.html` | 400,189 |
+| `index.html` | 406,030 |
 | `sw.js` | 3,196 |
 | `manifest.webmanifest` | 1,037 |
 | `vercel.json` | 1,704 |
 | `favicon.ico` | 19,145 |
 | `modules/accessibility.js` | 1,688 |
-| `modules/admin-interface.js` | 115,902 |
-| `modules/backup-engine.js` | 17,588 |
+| `modules/admin-interface.js` | 116,407 |
+| `modules/backup-engine.js` | 17,691 |
 | `modules/data-store.js` | 49,153 |
 | `modules/domain-rules.js` | 23,680 |
-| `modules/enrollment.js` | 97,076 |
+| `modules/enrollment.js` | 101,756 |
 | `modules/guide-search.js` | 17,833 |
-| `modules/lifecycle-audit.js` | 23,586 |
+| `modules/lifecycle-audit.js` | 23,662 |
 | `icons/icon-192.png` | 42,662 |
 | `icons/icon-192.webp` | 8,860 |
 | `icons/icon-512.png` | 254,876 |

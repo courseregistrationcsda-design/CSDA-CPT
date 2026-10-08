@@ -583,6 +583,7 @@ table.dt td.amtdue,.duetbl td.amtdue{font-size:14.5px;font-weight:800;color:var(
 textarea.finp{resize:vertical;min-height:62px;line-height:1.5}
 .frow{display:grid;gap:11px;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))}
 .frow.f3{grid-template-columns:repeat(auto-fit,minmax(min(100%,120px),1fr))}
+.studentCaptureGrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,32%);gap:18px;align-items:start}.studentPhotoPane{padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--soft)}.studentPhotoFrame{height:230px;border-radius:13px;overflow:hidden;background:#dce3ec;display:grid;place-items:center;margin:7px 0 10px}.studentPhotoFrame img{width:100%;height:100%;object-fit:cover;transform-origin:center;will-change:transform}@media(max-width:760px){.studentCaptureGrid{grid-template-columns:1fr}.studentPhotoPane{order:2}}
 .tabs{display:flex;gap:4px;background:var(--bg2);border:1px solid var(--line);border-radius:11px;
   padding:3px;margin-bottom:18px;flex-wrap:wrap}
 .tabs button{border:none;background:none;color:var(--sec);font-size:12px;font-weight:650;
@@ -1459,6 +1460,11 @@ input:focus,select:focus,textarea:focus{transform:translateY(-1px)}
   <div class="mb" id="iBody"></div>
 </div>
 
+<div class="modal motion-modal" id="cameraModal" role="dialog" aria-modal="true" aria-labelledby="cameraTitle">
+  <div class="mh"><div><div class="mk">Secure local capture</div><div class="mt" id="cameraTitle">Camera</div></div><button class="mx" id="cameraClose" aria-label="Close camera">&#10005;</button></div>
+  <div class="mb"><video id="cameraVideo" autoplay playsinline muted style="width:100%;max-height:58vh;background:#10141d;border-radius:14px;object-fit:contain"></video><canvas id="cameraCanvas" style="display:none"></canvas><div class="note" id="cameraStatus">Camera stays on this device. Nothing is uploaded automatically.</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn pri" id="cameraCapture">Capture photo</button><button class="btn" id="cameraRetake" style="display:none">Retake</button><button class="btn pri" id="cameraUse" style="display:none">Use photo</button></div></div>
+</div>
+
 <div class="modal motion-modal wide" id="rent" role="dialog" aria-modal="true" aria-labelledby="rTitle">
   <div class="mh">
     <div class="mk">Shared Service Facility</div>
@@ -1936,11 +1942,21 @@ window.addEventListener('beforeprint', function(){
 });
 window.addEventListener('afterprint', function(){ if (printRestore) printRestore(); });
 
+var cameraStream=null,cameraResult='',cameraReceiver=null,cameraPriorKind=null;
+function stopEmbeddedCamera(){if(cameraStream){cameraStream.getTracks().forEach(function(t){t.stop();});cameraStream=null;}}
+function closeEmbeddedCamera(){stopEmbeddedCamera();document.getElementById('cameraModal').classList.remove('on');openKind=cameraPriorKind||null;cameraReceiver=null;cameraResult='';if(!openKind){scrim.classList.remove('on');unlockPage();}}
+function openEmbeddedCamera(title,receiver){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){toast('Live camera is unavailable here. Use Upload photo instead.',true);return;}
+  cameraPriorKind=openKind;cameraReceiver=receiver;cameraResult='';document.getElementById('cameraTitle').textContent=title||'Camera';document.getElementById('cameraVideo').style.display='block';document.getElementById('cameraCapture').style.display='';document.getElementById('cameraRetake').style.display='none';document.getElementById('cameraUse').style.display='none';lockPage();scrim.classList.add('on');document.getElementById('cameraModal').classList.add('on');openKind='camera';
+  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false}).then(function(stream){cameraStream=stream;document.getElementById('cameraVideo').srcObject=stream;document.getElementById('cameraStatus').textContent='Camera ready. Frame the image, then capture.';}).catch(function(err){document.getElementById('cameraStatus').textContent='Camera permission was not granted. Close this window and use Upload photo.';toast('Camera unavailable: '+err.message,true);});
+}
 function closeAll(){
   scrim.classList.remove('on'); modal.classList.remove('on');
   admin.classList.remove('on'); enrollM.classList.remove('on'); monitorM.classList.remove('on');
   var ins = document.getElementById('install'); if (ins) ins.classList.remove('on');
   var rnt = document.getElementById('rent'); if (rnt) rnt.classList.remove('on');
+  var cam = document.getElementById('cameraModal'); if (cam) cam.classList.remove('on');
+  stopEmbeddedCamera();
   /* timers deliberately keep running once the console is closed — the alarm must
      still sound for a unit that is still occupied */
   openKind = null;
@@ -1994,6 +2010,10 @@ document.getElementById('aClose').onclick=function(){logAction('Administrator ac
 /* Resolve the lifecycle-module function when clicked; that module loads later. */
 document.getElementById('monitorClose').onclick = function(){ closeLifecycleMonitor(); };
 document.getElementById('eClose').onclick = function(){ closeWithDataCheck('enroll'); };
+document.getElementById('cameraClose').onclick=closeEmbeddedCamera;
+document.getElementById('cameraCapture').onclick=function(){var v=document.getElementById('cameraVideo'),c=document.getElementById('cameraCanvas');if(!v.videoWidth){toast('Wait for the camera preview',true);return;}var max=1400,scale=Math.min(1,max/Math.max(v.videoWidth,v.videoHeight));c.width=Math.round(v.videoWidth*scale);c.height=Math.round(v.videoHeight*scale);c.getContext('2d').drawImage(v,0,0,c.width,c.height);cameraResult=c.toDataURL('image/jpeg',.84);v.srcObject=null;stopEmbeddedCamera();v.poster=cameraResult;document.getElementById('cameraCapture').style.display='none';document.getElementById('cameraRetake').style.display='';document.getElementById('cameraUse').style.display='';document.getElementById('cameraStatus').textContent='Review the captured image. Retake or use it.';};
+document.getElementById('cameraRetake').onclick=function(){var title=document.getElementById('cameraTitle').textContent,receiver=cameraReceiver;closeEmbeddedCamera();openEmbeddedCamera(title,receiver);};
+document.getElementById('cameraUse').onclick=function(){var fn=cameraReceiver,data=cameraResult;closeEmbeddedCamera();if(fn&&data)fn(data);};
 
 /* ================= QUOTE MODAL ================= */
 var eTab = 'student';
@@ -2700,7 +2720,7 @@ function saveRecord(){
     student: JSON.parse(JSON.stringify(E.student)),
     guardian: JSON.parse(JSON.stringify(E.guardian)),
     trainer:JSON.parse(JSON.stringify(E.trainer||{id:'',name:'',email:''})),trainerAssignments:JSON.parse(JSON.stringify(E.trainerAssignments||[])),
-    courses: E.courses.slice(), promos: JSON.parse(JSON.stringify(E.promos)),
+    courses: E.courses.slice(), courseTrainers:JSON.parse(JSON.stringify(E.courseTrainers||{})), promos: JSON.parse(JSON.stringify(E.promos)),
     plan: E.plan, sched: JSON.parse(JSON.stringify(E.sched)), notes: E.notes,
     consent: JSON.parse(JSON.stringify(E.consent || {})),
     agree: JSON.parse(JSON.stringify(E.agree || {})),
@@ -2749,6 +2769,7 @@ function loadRecord(rc){
   E.student = JSON.parse(JSON.stringify(rc.student || {}));
   E.guardian = JSON.parse(JSON.stringify(rc.guardian || {}));
   E.courses = (rc.courses || []).slice();
+  E.courseTrainers = JSON.parse(JSON.stringify(rc.courseTrainers || {}));
   E.promos = JSON.parse(JSON.stringify(rc.promos || {}));
   E.plan = rc.plan; E.notes = rc.notes || '';
   E.trainer=JSON.parse(JSON.stringify(rc.trainer||{id:'',name:'',email:''}));E.trainerAssignments=JSON.parse(JSON.stringify(rc.trainerAssignments||[]));
@@ -2793,7 +2814,7 @@ function adminData(){
     '</div><div class="field" style="margin-top:12px"><label class="flab" for="backupPw">Administrator password</label><input class="finp" id="backupPw" type="password" autocomplete="current-password" placeholder="Required to encrypt the complete backup"></div>' +
     '<button class="btn pri" data-act="backup-out-csvzip" style="margin-top:9px">&#8595; Download password-protected CSV backup ZIP</button>' +
     '<div class="note" style="font-size:12px">Includes the complete local app database: names, classes, schedules, catalogue additions, artwork, promotions, payments and receipt images, facility data, configuration, lifecycle states, and audit history.</div>' +
-    '<div style="border-top:1px solid var(--line);margin-top:14px;padding-top:14px"><b style="font-size:12px">Open a session backup</b><div class="frow" style="margin-top:8px"><label class="btn" style="cursor:pointer">Choose encrypted backup<input type="file" id="secureBackupFile" accept=".zip,.csdabackup,application/json,application/zip" style="display:none"></label><div class="field" style="flex:1"><label class="flab" for="restoreBackupPw">Backup password</label><input class="finp" id="restoreBackupPw" type="password" autocomplete="current-password"></div><button class="btn" data-act="backup-open-secure">Open &amp; inspect</button></div>' +
+    '<div style="border-top:1px solid var(--line);margin-top:14px;padding-top:14px"><b style="font-size:12px">Import Session ZIP</b>'+(store.get('csda_restore_recommended')==='1'?'<div class="okbox" style="margin-top:8px"><b>Restore recommended.</b><br>The previous guarded removal created a backup before local data was cleared. Select that ZIP below.</div>':'')+'<div class="note" style="font-size:12px">Select one CSDA session ZIP. The app extracts and verifies every table and referenced media file, decrypts the complete session, adapts recognized records to the current version, then previews Replace or Merge.</div><div class="frow" style="margin-top:8px"><div class="field" style="flex:1"><label class="flab" for="restoreBackupPw">Backup password</label><input class="finp" id="restoreBackupPw" type="password" autocomplete="current-password" placeholder="Enter before selecting the ZIP"></div><label class="btn pri" style="cursor:pointer">Import Session ZIP<input type="file" id="secureBackupFile" accept=".zip,application/zip" style="display:none"></label></div>' +
     (secureBackupPreview?(function(){var x=backupSummary(secureBackupPreview);return '<div class="okbox" style="margin-top:10px"><b>Recognized CSDA session</b><br>'+esc(secureBackupIntegrity||'Encrypted payload authenticated')+'<br>'+x.students+' enrollments · '+x.courses+' courses · '+x.trainers+' trainers · '+x.promos+' promotions<br>Exported '+esc(String(x.exportedAt).replace('T',' ').slice(0,19))+'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn pri" data-act="backup-restore-replace">Replace with this session</button><button class="btn" data-act="backup-restore-merge">Merge into this app</button><button class="btn" data-act="backup-preview-clear">Cancel</button></div></div>';})():'')+'</div></div>';
   return backupCard + usageCard + '<div class="ms"><div class="msh">Trainer CSV</div>' +
     '<div class="note" style="margin-top:0">Download the catalogue as a spreadsheet, hand it to a trainer to fill in ' +
@@ -2814,14 +2835,7 @@ function adminData(){
       'placeholder="…or paste CSV content here, then press Import CSV.">'+esc(csvBuf)+'</textarea>' +
     '<button class="btn pri" data-act="csv-in" style="margin-top:9px">Import CSV</button></div>' +
     pdfExportBlock() +
-    '<div class="ms"><div class="msh">Restore &amp; reset</div>' +
-    '<div class="note" style="margin-top:0">Paste a previously exported backup to restore a catalogue, or ' +
-    'start again from the built-in defaults. Resetting keeps saved enrollments.</div>' +
-    '<div style="display:flex;gap:9px;margin-top:13px;flex-wrap:wrap">' +
-      '<button class="btn" data-act="import">&#8593; Restore from backup</button>' +
-      '<button class="btn dgr" data-act="reset" style="margin-left:auto">Reset to defaults</button></div>' +
-    '<textarea class="finp" id="io" style="margin-top:13px;min-height:110px;font-size:11px" ' +
-      'placeholder="Paste a previously exported catalogue here, then press Restore.">'+esc(ioBuf)+'</textarea></div>';
+    '<div class="ms"><div class="msh">Reset catalogue defaults</div><div class="note" style="margin-top:0">Reset only the catalogue configuration to built-in defaults. Saved enrollments remain. Complete session restoration is handled by <b>Import Session ZIP</b> above.</div><button class="btn dgr" data-act="reset">Reset catalogue to defaults</button></div>';
 }
 
 /* ---------- PDF export ----------
@@ -2889,7 +2903,7 @@ document.getElementById('aBody').addEventListener('change', function(e){
   if(e.target.id==='trainerPhotoFile'&&e.target.files&&e.target.files[0]){var tf=e.target.files[0];if(tf.size>5000000){toast('Photo is over 5 MB',true);return;}var frp=new FileReader();frp.onload=function(){var im=new Image();im.onload=function(){var c=document.createElement('canvas'),z=320;c.width=z;c.height=z;var sc=Math.max(z/im.width,z/im.height),w=im.width*sc,h=im.height*sc;c.getContext('2d').drawImage(im,(z-w)/2,(z-h)/2,w,h);trDraft.photo=c.toDataURL('image/webp',.76);renderAdmin();};im.src=String(frp.result||'');};frp.readAsDataURL(tf);return;}
   if (e.target.id === 'secureBackupFile' && e.target.files && e.target.files[0]) {
     var sf=e.target.files[0]; if(sf.size>50000000){toast('Backup is over 50 MB',true);return;}
-    var sr=new FileReader();sr.onload=async function(){try{if(/\.zip$/i.test(sf.name)){var entries=await validateNormalizedZIP(sr.result),rows=parseCSV(entries['database.csv']);secureBackupFileText=(rows[1]||[])[1]||'';secureBackupIntegrity='Verified '+(Object.keys(entries).length-1)+' encrypted files against manifest hashes';}else{secureBackupFileText=String(sr.result||'');secureBackupIntegrity='Legacy encrypted backup';}toast('Backup integrity verified — enter its password and choose Open & inspect');}catch(err){secureBackupFileText='';secureBackupIntegrity='';toast('Could not read backup: '+err.message,true);}};if(/\.zip$/i.test(sf.name))sr.readAsArrayBuffer(sf);else sr.readAsText(sf);return;
+    var sr=new FileReader();sr.onload=async function(){try{var entries=await validateNormalizedZIP(sr.result),rows=parseCSV(entries['database.csv']);secureBackupFileText=(rows[1]||[])[1]||'';secureBackupIntegrity='Verified and extracted '+(Object.keys(entries).length-1)+' files, including all recognized tables and media';var rp=(document.getElementById('restoreBackupPw')||{}).value||'';if(!rp)throw new Error('Enter the backup password before selecting the ZIP');toast('Opening and adapting the complete session…');secureBackupPreview=await decryptFullBackup(secureBackupFileText,rp);renderAdmin();toast('Complete session recognized — preview Replace or Merge');}catch(err){secureBackupFileText='';secureBackupPreview=null;secureBackupIntegrity='';toast('Could not import session ZIP: '+err.message,true);}};sr.readAsArrayBuffer(sf);return;
   }
   if (e.target.id === 'artFile' && e.target.files && e.target.files[0]) {
     var af=e.target.files[0];
@@ -3009,6 +3023,7 @@ monitorBody.addEventListener('change',function(e){
   var fr=new FileReader();fr.onload=function(){var c=saveCompletionAuditInputs(rc);c.financial.refundReceipt=String(fr.result||'');c.financial.refundConfirmed=false;save();renderLifecycleMonitor();toast('Refund receipt attached — verify it, then confirm the refund');};fr.readAsDataURL(file);
 });
 monitorBody.addEventListener('click',function(e){
+  var rcam=e.target.closest('[data-refundcamera]');if(rcam){var rr=recordByRef(rcam.getAttribute('data-refundcamera'));if(!rr)return;openEmbeddedCamera('Capture refund receipt',function(data){var c=ensureCertification(rr);c.financial.refundReceipt=data;c.financial.refundConfirmed=false;save();renderLifecycleMonitor();toast('Refund receipt captured — verify it, then confirm');});return;}
   if(e.target.closest('[data-act="refresh-monitor"]')){renderLifecycleMonitor();return;}
   var an=e.target.closest('[data-auditnav]');if(an){lifecycleDetailRef=an.getAttribute('data-auditnav');renderLifecycleMonitor();return;}var artn=e.target.closest('[data-auditreturn]');if(artn){if(artn.getAttribute('data-auditreturn')==='queue'){lifecycleDetailRef=null;monitorM.classList.remove('on');admin.classList.add('on');openKind='admin';aTab='audits';renderAdmin();}else{lifecycleDetailRef=null;renderLifecycleMonitor();}return;}
   if(e.target.hasAttribute('data-lifeclose')){lifecycleDetailRef=null;renderLifecycleMonitor();return;}
@@ -3031,6 +3046,8 @@ monitorBody.addEventListener('click',function(e){
 
 document.getElementById('aBody').addEventListener('click', function(e){
   var t;
+  var gt=e.target.closest('[data-guidetoggle]');if(gt){guidelineSupplementOpen=!guidelineSupplementOpen;renderAdmin();var gtb=document.querySelector('[data-guidetoggle]');if(gtb)gtb.focus();return;}
+  var vc=e.target.closest('[data-vcamera]');if(vc){var vk=vc.getAttribute('data-vcamera').split(':'),vr=DB.records[+vk[0]],vp=vr&&vr.payments[+vk[1]];if(!vp)return;openEmbeddedCamera('Capture payment receipt',function(data){vp.receipt=data;vp.status='Pending';vp.by='';vp.at='';logAction('Captured receipt image for '+(vp.txn||''),staffName);save();renderAdmin();toast('Receipt captured and attached');});return;}
   var gs=e.target.closest('[data-guidesearch]');if(gs){if(gs.getAttribute('data-guidesearch')==='clear')guideQuery='';else guideQuery=((document.getElementById('guideQuery')||{}).value||'').trim();renderAdmin();var gq=document.getElementById('guideQuery');if(gq){gq.focus();try{gq.setSelectionRange(gq.value.length,gq.value.length);}catch(_){} }return;}
   var wf=e.target.closest('[data-workfilter]');if(wf){var mode=wf.getAttribute('data-workfilter');if(mode==='clear')workFilters={q:'',status:'',payment:'',clearance:'',refund:'',from:'',to:'',showArchived:false};else if(mode==='archived')workFilters.showArchived=!workFilters.showArchived;else{workFilters.q=(document.getElementById('workQ').value||'').trim();workFilters.status=document.getElementById('workStatus').value;workFilters.payment=document.getElementById('workPayment').value;workFilters.clearance=document.getElementById('workClearance').value;workFilters.refund=document.getElementById('workRefund').value;workFilters.from=document.getElementById('workFrom').value;workFilters.to=document.getElementById('workTo').value;}renderAdmin();return;}
   var wr=e.target.closest('[data-workrecord]');if(wr){auditOrigin='monitor';lifecycleDetailRef=wr.getAttribute('data-workrecord');renderLifecycleMonitor();admin.classList.remove('on');monitorM.classList.add('on');openKind='monitor';return;}
@@ -3729,7 +3746,7 @@ async function guardedUninstall(){
     files.push({name:'database.csv',text:database});files.unshift({name:'manifest.csv',text:await normalizedManifest(files,result.stamp)});
     if(!downloadBlobFile('csda-toolkit-pre-uninstall-backup-'+today()+'.zip',zipCSVFiles(files))){toast('Backup download was blocked. Nothing was cleared.',true);return;}
     if(!window.confirm('Backup download started. Confirm that you will keep the ZIP and password securely. Clear all local CSDA app data now?'))return;
-    try{localStorage.clear();}catch(e){mem={};}
+    try{localStorage.clear();localStorage.setItem('csda_restore_recommended','1');}catch(e){mem={csda_restore_recommended:'1'};}
     if(window.caches&&caches.keys)caches.keys().then(function(keys){return Promise.all(keys.map(function(k){return caches.delete(k);}));});
     document.getElementById('iBody').innerHTML='<div class="okbox"><b>Local CSDA data cleared after backup.</b><br>Now remove the installed app through your browser or device app menu: open the app menu, choose Uninstall or Remove app, and confirm. Keep the downloaded ZIP and its password separately.</div>';
   }catch(err){toast('Backup failed, so no data was cleared: '+err.message,true);}

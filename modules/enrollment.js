@@ -21,10 +21,11 @@ function applyEnrollErrors(){
     }
   });
 }
+function setStudentPhoto(data){if(!E||!data)return;E.student.photo={full:data,zoom:1,x:50,y:50};renderEnroll();toast('Student photo added to the private record');}
 function blankEnroll(pre){
   return {
     ref:'', date: today(),
-    student:{ name:'', educ:'', dob:'', provider:'', mode:'Face-to-Face' },
+    student:{ name:'', educ:'', dob:'', provider:'', mode:'Face-to-Face', photo:null },
     guardian:{ name:'', rel:'Parent', mobile:'', email:'', address:'', verified:false },
     trainer:{id:'',name:'',email:''},trainerAssignments:[],
     consent: { gName:'', gRel:'Parent', gMobile:'', call:false, dpa:false, money:false,
@@ -37,6 +38,7 @@ function blankEnroll(pre){
     trainerCustom: false,       // true when the trainer was typed in rather than picked
     trainerSave: false,         // ask to file a typed-in trainer in the pool
     courses: (pre && pre.courses) ? pre.courses.slice() : [],
+    courseTrainers: {},
     promos: (pre && pre.promos) ? pre.promos : {},
     plan: (pre && pre.plan) ? pre.plan : (DB.plans[0]||{}).id,
     sched:{ start:'', end:'', count:8, tstart: DB.cfg.tstart || '13:00', dur: DB.cfg.dur || 3,
@@ -139,13 +141,15 @@ function trainerAllocationPool(){
   var rows=[];
   if(E.trainer&&E.trainer.id)rows.push({id:E.trainer.id,name:E.trainer.name||''});
   (E.trainerAssignments||[]).forEach(function(a){if(a.trainerId&&!rows.some(function(x){return x.id===a.trainerId;}))rows.push({id:a.trainerId,name:a.name||(trainerById(a.trainerId)||{}).name||''});});
+  Object.keys(E.courseTrainers||{}).forEach(function(cid){var id=E.courseTrainers[cid],tr=trainerById(id);if(id&&!rows.some(function(x){return x.id===id;}))rows.push({id:id,name:(tr||{}).name||''});});
   return rows;
 }
 function autoAllocateTrainerSessions(){
   var s=E.sched||{},pool=trainerAllocationPool(),dates=s.dates||[];
   if(!dates.length||!pool.length)return;
   if(!s.trainerIds)s.trainerIds=[];
-  dates.forEach(function(d,i){if(!s.trainerIds[i]||!pool.some(function(x){return x.id===s.trainerIds[i];}))s.trainerIds[i]=pool[Math.min(pool.length-1,Math.floor(i*pool.length/dates.length))].id;});
+  var courseBlocks=[],courseTotal=0;(E.courses||[]).forEach(function(cid){var it=itemById(cid),n=Math.max(1,+((it||{}).sess)||1);courseTotal+=n;courseBlocks.push({id:cid,end:courseTotal});});
+  dates.forEach(function(d,i){var unit=courseTotal?((i+.5)*courseTotal/dates.length):0,block=courseBlocks.filter(function(b){return unit<=b.end;})[0],courseTrainer=block&&E.courseTrainers&&E.courseTrainers[block.id];if(courseTrainer)s.trainerIds[i]=courseTrainer;else if(!s.trainerIds[i]||!pool.some(function(x){return x.id===s.trainerIds[i];}))s.trainerIds[i]=pool[Math.min(pool.length-1,Math.floor(i*pool.length/dates.length))].id;});
   s.trainerIds.length=dates.length;
   var share=(+s.hrs||(+s.dur||0)*dates.length)/pool.length;
   (E.trainerAssignments||[]).forEach(function(a){var idx=pool.findIndex(function(x){return x.id===a.trainerId;}),owned=[];s.trainerIds.forEach(function(id,i){if(id===a.trainerId)owned.push(i);});if(idx>=0&&owned.length){a.start=dates[owned[0]];a.end=dates[owned[owned.length-1]];a.hours=Math.round(share*100)/100;a.suggestedStart=idx?dates[Math.ceil(idx*dates.length/pool.length)]||'':'';}});
@@ -293,6 +297,9 @@ function syncEnroll(){
   E.student.dob = g('e_dob', E.student.dob);
   E.student.provider = g('e_prov', E.student.provider).trim();
   E.student.mode = g('e_mode', E.student.mode);
+  if(E.student.photo){E.student.photo.zoom=parseFloat(g('studentPhotoZoom',E.student.photo.zoom||1))||1;E.student.photo.x=parseFloat(g('studentPhotoX',E.student.photo.x||50));E.student.photo.y=parseFloat(g('studentPhotoY',E.student.photo.y||50));}
+  if(!E.courseTrainers)E.courseTrainers={};document.querySelectorAll('[data-course-trainer]').forEach(function(n){E.courseTrainers[n.getAttribute('data-course-trainer')]=n.value||'';});
+  var firstCourseTrainer=E.courses.map(function(id){return E.courseTrainers[id];}).filter(Boolean)[0];if(firstCourseTrainer&&(!E.trainer||!E.trainer.id)){var fct=trainerById(firstCourseTrainer);if(fct)E.trainer={id:fct.id,name:fct.name,email:fct.email||''};}
   E.guardian.name = g('e_gname', E.guardian.name).trim();
   E.guardian.rel = g('e_grel', E.guardian.rel).trim();
   E.guardian.mobile = g('e_gmob', E.guardian.mobile).trim();
@@ -425,6 +432,7 @@ function enrollTabState(tab){
   if (tab === 'courses')  return E.courses.length ? '' : 'todo';
   if (tab === 'schedule') {
     if (!E.courses.length) return '';
+    if ((E.courses||[]).some(function(id){return !(E.courseTrainers||{})[id];})) return 'todo';
     if (!E.trainer || !String(E.trainer.name||'').trim()) return 'todo';
     if (isDateRange(E.courses)) {
       if (!E.sched.start || !E.sched.end) return 'todo';
@@ -503,7 +511,7 @@ function renderEnroll(){
 
   /* ---------- student ---------- */
   if (eTab === 'student') {
-  h += '<div class="ms"><div class="msh">Student details</div>' +
+  h += '<div class="ms"><div class="msh">Student details</div><div class="studentCaptureGrid"><div>' +
     '<div class="frow"><div class="field"><label class="flab" for="e_sname">Full name <span class="req">*</span></label>' +
       '<input class="finp" id="e_sname" value="'+esc(E.student.name)+'" placeholder="Surname, First Name M.I."></div>' +
     '<div class="field"><label class="flab" for="e_educ">Highest educational attainment</label>' +
@@ -520,9 +528,12 @@ function renderEnroll(){
       '<input class="finp" id="e_prov" value="'+esc(E.student.provider)+'"></div>' +
     '<div class="field"><label class="flab" for="e_mode">Delivery mode</label>' +
       '<select class="finp" id="e_mode">' + ['Face-to-Face','Online','Hybrid'].map(function(m){
-        return '<option'+(E.student.mode===m?' selected':'')+'>'+m+'</option>'; }).join('') + '</select></div></div>';
-
-
+        return '<option'+(E.student.mode===m?' selected':'')+'>'+m+'</option>'; }).join('') + '</select></div></div></div>' +
+      '<aside class="studentPhotoPane"><div class="flab">Student profile photo <span class="sc">Record only</span></div>'+
+      '<div class="studentPhotoFrame">'+(E.student.photo&&E.student.photo.full?'<img src="'+esc(E.student.photo.full)+'" alt="Student profile preview" style="transform:translate('+(E.student.photo.x-50)+'%,'+(E.student.photo.y-50)+'%) scale('+E.student.photo.zoom+');">':'<div class="picknone">No student photo</div>')+'</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-eact="student-camera">Use camera</button><label class="btn sm" style="cursor:pointer">Upload photo<input type="file" id="studentPhotoFile" accept="image/jpeg,image/png,image/webp" style="display:none"></label></div>'+
+      (E.student.photo&&E.student.photo.full?'<label class="flab">Zoom<input class="finp" id="studentPhotoZoom" type="range" min="1" max="3" step="0.05" value="'+E.student.photo.zoom+'"></label><label class="flab">Horizontal placement<input class="finp" id="studentPhotoX" type="range" min="0" max="100" value="'+E.student.photo.x+'"></label><label class="flab">Vertical placement<input class="finp" id="studentPhotoY" type="range" min="0" max="100" value="'+E.student.photo.y+'"></label><button class="btn dgr sm" data-eact="student-photo-remove">Remove photo</button>':'')+
+      '<div class="note">Stored only in the student record and encrypted session backup. It is not printed on the enrollment form.</div></aside></div></div>';
 
   }
 
@@ -550,7 +561,7 @@ function renderEnroll(){
       return '<span class="pickchip"><span class="pcn2">'+esc(i.n)+'</span>' +
         '<span class="pcp2 mono">'+money(i.price)+'</span>' +
         '<button data-ecourse="'+i.id+'" aria-label="Remove '+esc(i.n)+'" title="Remove">&#10005;</button></span>';
-    }).join('') + '</div>';
+    }).join('') + '</div><div class="ms" style="margin-top:10px"><div class="msh">Assign a trainer to each selected course</div><div class="note" style="margin-top:0">Choose now; generated sessions inherit each course trainer and remain editable in the calendar.</div>'+picked.map(function(i){return '<div class="frow"><b>'+esc(i.n)+'</b>'+trainerSelect('course_trainer_'+i.id,(E.courseTrainers||{})[i.id]||'',' data-course-trainer="'+esc(i.id)+'"')+'</div>';}).join('')+'</div>';
   } else {
     h += '<div class="picknone">No courses chosen yet \u2014 pick one below.</div>';
   }
@@ -857,7 +868,7 @@ function renderEnroll(){
         '<label class="btn pri blk" style="cursor:pointer;margin-top:11px">' +
           '&#8593; Re-upload Proof of Payment' +
           '<input type="file" id="e_reupload" accept="image/*" capture="environment" style="display:none">' +
-        '</label>' +
+        '</label><button class="btn blk" data-eact="receipt-camera" style="margin-top:8px">Open in-app camera</button>' +
         '<div class="abm" style="margin-top:8px;font-size:11.5px">For a minor enrollee the registrar may ' +
         'also contact the registered parent / guardian to assist with verification.</div>';
     } else {
@@ -1359,6 +1370,7 @@ document.getElementById('eBody').addEventListener('input', function(e){
 });
 document.getElementById('eBody').addEventListener('change', function(e){
   if (e.target && e.target.id) clearEnrollError(e.target.id);
+  if(e.target&&e.target.id==='studentPhotoFile'&&e.target.files&&e.target.files[0]){var sp=e.target.files[0];if(sp.size>6000000){toast('Student photo is over 6 MB',true);return;}var spr=new FileReader();spr.onload=function(){setStudentPhoto(String(spr.result||''));};spr.readAsDataURL(sp);return;}
   if (e.target && e.target.id === 'e_reupload' && e.target.files && e.target.files[0]) {
     var f = e.target.files[0];
     if (f.size > 900000) { toast('Image over 900 KB \u2014 use a smaller screenshot', true); return; }
@@ -1393,7 +1405,7 @@ document.getElementById('eBody').addEventListener('change', function(e){
     if (sl) sl.focus();
     return;
   }
-  if (!/^(e_start|e_end|e_tstart|e_dur|e_count|e_trainer|e_mode|e_educ|e_dob|e_date|sd_\d+|sa_\d+|sb_\d+)$/.test(id)) return;
+  if (!/^(e_start|e_end|e_tstart|e_dur|e_count|e_trainer|e_mode|e_educ|e_dob|e_date|studentPhotoZoom|studentPhotoX|studentPhotoY|course_trainer_.+|sd_\d+|sa_\d+|sb_\d+|st_\d+)$/.test(id)) return;
   syncEnroll();
   renderEnroll();
 });
@@ -1431,7 +1443,7 @@ document.getElementById('eBody').addEventListener('click', function(e){
     syncEnroll();
     var id = t.getAttribute('data-ecourse');
     var ix = E.courses.indexOf(id);
-    if (ix > -1) E.courses.splice(ix, 1); else E.courses.push(id);
+    if (ix > -1){E.courses.splice(ix, 1);if(E.courseTrainers)delete E.courseTrainers[id];} else E.courses.push(id);
     applyCourseChange();
     renderEnroll(); return;
   }
@@ -1602,6 +1614,9 @@ document.getElementById('eBody').addEventListener('click', function(e){
     saveRecord();            // file it first, so finalising never loses the enrollment
     trainerHandoff();
   }
+  else if(act==='student-camera'){openEmbeddedCamera('Capture student profile photo',setStudentPhoto);}
+  else if(act==='student-photo-remove'){E.student.photo=null;renderEnroll();toast('Student photo removed');}
+  else if(act==='receipt-camera'){openEmbeddedCamera('Capture payment receipt',function(data){var target=(E.payments||[]).filter(function(x){return x.status==='Flagged';})[0];if(!target)return;target.receipt=data;target.status='Pending';target.by='';target.at='';renderEnroll();toast('Receipt captured — back in the verification queue');});}
   else if(act==='trainer-add'){syncEnroll();if(!E.trainerAssignments)E.trainerAssignments=[];E.trainerAssignments.push({trainerId:'',name:'',start:E.sched.start||'',end:E.sched.end||'',hours:0});renderEnroll();}
   else if(act==='trainer-remove'){syncEnroll();var rm=e.target.closest('[data-ta-remove]');if(rm)E.trainerAssignments.splice(+rm.getAttribute('data-ta-remove'),1);renderEnroll();}
   else if (act === 'pay-add') {
