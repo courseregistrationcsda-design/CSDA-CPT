@@ -32,10 +32,11 @@ if(!html.includes(old)) throw new Error('Download hook not found'); html=html.re
      on-demand standalone copy to the install precache. This preserves repeat-load
      offline behavior instead of waiting for each image to enter the runtime cache. */
   let sw=fs.readFileSync(path.join(root,'sw.js'),'utf8');
-  const extra=[...seen.values()].map(x=>'/'+x).concat(['/standalone.html']);
+  const extra=[...seen.values()].map(x=>'/'+x).concat(['/standalone.html','/guides/csda-general-administrative-guidelines.pdf','/guides/csda-general-administrative-guidelines.html']);
   sw=sw.replace("  '/favicon.ico',", "  '/favicon.ico',\n"+extra.map(x=>`  '${x}',`).join('\n'));
   fs.writeFileSync(path.join(out,'sw.js'),sw);
   fs.cpSync(path.join(root,'icons'),path.join(out,'icons'),{recursive:true});
+  fs.cpSync(path.join(root,'guides'),path.join(out,'guides'),{recursive:true});
   const result={sourceBytes:Buffer.byteLength(source),hostedHtmlBytes:Buffer.byteLength(html),standaloneBytes:Buffer.byteLength(source),externalAssets:[...seen.values()],generatedAt:new Date().toISOString()};
   fs.writeFileSync(path.join(out,'build-report.json'),JSON.stringify(result,null,2)+'\n');
   console.log(`Hosted HTML ${result.sourceBytes} -> ${result.hostedHtmlBytes} bytes; ${seen.size} images externalized`);

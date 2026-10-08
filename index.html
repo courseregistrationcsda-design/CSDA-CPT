@@ -3702,6 +3702,8 @@ function renderInstall(){
     'operating-system file-type setting, which is exactly why the launcher above exists: a shortcut file ' +
     '<i>can</i> carry its own icon.</div></div>';
 
+  h += '<div class="inststeps" style="margin-top:14px"><div class="msh">Remove this app and local data</div><div class="note">A verified Administrator password and a successfully downloaded full backup ZIP are mandatory before local records can be cleared. Your browser or device must still remove the installed app itself.</div><div class="field"><label class="flab" for="uninstallPw">Administrator password</label><input class="finp" id="uninstallPw" type="password" autocomplete="current-password"></div><button class="btn dgr blk" data-iact="uninstall">Authenticate, download backup, then clear data</button></div>';
+
   h += '<div class="alert" style="margin-top:16px"><div class="ai">&#9888;</div><div class="at">' +
     'Your catalogue and saved enrollments live in <b>this browser on this machine</b>. The downloaded file ' +
     'starts from the built-in defaults — edits and enrollments do not travel with it. Move a catalogue across ' +
@@ -3718,11 +3720,26 @@ function openInstall(){
 }
 document.getElementById('installBtn').onclick = getApp;
 document.getElementById('iClose').onclick = closeAll;
+async function guardedUninstall(){
+  var pw=(document.getElementById('uninstallPw')||{}).value||'';
+  if(!await verifyAdministratorPassword(pw)){toast('Administrator password is incorrect',true);return;}
+  toast('Preparing the mandatory full backup ZIP…');
+  try{
+    var result=await encryptFullBackup(pw),files=await normalizedBackupFiles(pw),database='format,payload\r\n'+csvCell('csda-toolkit-encrypted-backup')+','+csvCell(result.text)+'\r\n';
+    files.push({name:'database.csv',text:database});files.unshift({name:'manifest.csv',text:await normalizedManifest(files,result.stamp)});
+    if(!downloadBlobFile('csda-toolkit-pre-uninstall-backup-'+today()+'.zip',zipCSVFiles(files))){toast('Backup download was blocked. Nothing was cleared.',true);return;}
+    if(!window.confirm('Backup download started. Confirm that you will keep the ZIP and password securely. Clear all local CSDA app data now?'))return;
+    try{localStorage.clear();}catch(e){mem={};}
+    if(window.caches&&caches.keys)caches.keys().then(function(keys){return Promise.all(keys.map(function(k){return caches.delete(k);}));});
+    document.getElementById('iBody').innerHTML='<div class="okbox"><b>Local CSDA data cleared after backup.</b><br>Now remove the installed app through your browser or device app menu: open the app menu, choose Uninstall or Remove app, and confirm. Keep the downloaded ZIP and its password separately.</div>';
+  }catch(err){toast('Backup failed, so no data was cleared: '+err.message,true);}
+}
 
 document.getElementById('iBody').addEventListener('click', function(e){
   var el = e.target.closest('[data-iact]'); if (!el) return;
   var a = el.getAttribute('data-iact');
-  if (a === 'save') {
+  if (a === 'uninstall') { guardedUninstall();
+  } else if (a === 'save') {
     var ok = download('csda-pricing-toolkit.html', serializeApp(), 'text/html;charset=utf-8');
     if (ok) retireNudge();
     toast(ok ? 'Downloaded — keep it somewhere permanent'

@@ -153,7 +153,10 @@ async function staticAndHttpChecks(port) {
   check(/nextAdminTab==='monitor'/.test(html) && /launchLifecycleMonitor\(\)/.test(html), 'Class Monitor sidebar entry launches the monitor instead of a blank Admin panel');
   check(/adminCompletionAudits[\s\S]{0,300}localeCompare/.test(html), 'Completion Audit queue is sorted oldest first');
   check(/CORDILLERA SCHOOL OF DIGITAL ARTS, INC\. 2026/.test(html) && !/Nino Jose B\. Seriosa/.test(html), 'General footer uses the school name and year without creator attribution');
-  check(/Workflow map/.test(html) && /Completion Audit gate model/.test(html) && /Open full illustrated guidebook/.test(html), 'Detailed illustrated guidelines are accessible in Admin');
+  check(/Workflow map/.test(html) && /Completion Audit gate model/.test(html) && /application\/pdf/.test(html) && /General Administrative Guidelines PDF/.test(html), 'Detailed guidelines PDF is embedded in Admin');
+  check(/autoAllocateTrainerSessions/.test(html) && /trainerIds/.test(html) && /two trainers = 50\/50/.test(html) && /courseEndingLabel/.test(html), 'Generated calendar supports equal multi-trainer allocation and course boundaries');
+  check(/capture=\\?"environment/.test(html) && /camera=\(self\)/.test(fs.readFileSync(path.join(ROOT,'vercel.json'),'utf8')), 'Receipt uploads can invoke the rear camera on supported devices');
+  check(/guardedUninstall/.test(html) && /pre-uninstall-backup/.test(html) && /localStorage\.clear/.test(html), 'Removal requires Admin verification and mandatory backup before local clearing');
   check(/auditAttendance/.test(html) && /trainer\.attendance\|\|'Complete'/.test(html) && !/id="auditUtilization"/.test(html), 'Attendance defaults complete and seat utilization is removed');
   check(/\['audits','Completion Audit'\]/.test(html) && /adminCompletionAudits/.test(html) && /data-auditopen/.test(html), 'Dedicated Completion Audit Admin tab present');
   check(/data-auditedit/.test(html) && /Completion audit edit/.test(html), 'Audit full enrollment editing present');

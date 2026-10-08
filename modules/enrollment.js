@@ -133,7 +133,24 @@ function ensureDates(){
     if (!s.times[i]) s.times[i] = { a: s.tstart, b: addMinutes(s.tstart, s.dur * 60) };
   }
   s.times.length = s.count;
+  autoAllocateTrainerSessions();
 }
+function trainerAllocationPool(){
+  var rows=[];
+  if(E.trainer&&E.trainer.id)rows.push({id:E.trainer.id,name:E.trainer.name||''});
+  (E.trainerAssignments||[]).forEach(function(a){if(a.trainerId&&!rows.some(function(x){return x.id===a.trainerId;}))rows.push({id:a.trainerId,name:a.name||(trainerById(a.trainerId)||{}).name||''});});
+  return rows;
+}
+function autoAllocateTrainerSessions(){
+  var s=E.sched||{},pool=trainerAllocationPool(),dates=s.dates||[];
+  if(!dates.length||!pool.length)return;
+  if(!s.trainerIds)s.trainerIds=[];
+  dates.forEach(function(d,i){if(!s.trainerIds[i]||!pool.some(function(x){return x.id===s.trainerIds[i];}))s.trainerIds[i]=pool[Math.min(pool.length-1,Math.floor(i*pool.length/dates.length))].id;});
+  s.trainerIds.length=dates.length;
+  var share=(+s.hrs||(+s.dur||0)*dates.length)/pool.length;
+  (E.trainerAssignments||[]).forEach(function(a){var idx=pool.findIndex(function(x){return x.id===a.trainerId;}),owned=[];s.trainerIds.forEach(function(id,i){if(id===a.trainerId)owned.push(i);});if(idx>=0&&owned.length){a.start=dates[owned[0]];a.end=dates[owned[owned.length-1]];a.hours=Math.round(share*100)/100;a.suggestedStart=idx?dates[Math.ceil(idx*dates.length/pool.length)]||'':'';}});
+}
+function courseEndingLabel(ix){var at=0,names=[];(E.courses||[]).forEach(function(id){var it=itemById(id);at+=Math.max(1,+((it||{}).sess)||1);if(ix+1===Math.min((E.sched.dates||[]).length,at))names.push((it||{}).n||id);});return names.join(' / ');}
 /* Switching a class date off: it leaves the run, and only the sessions after it
    move up — anything the rep already adjusted by hand before that point stays put.
    A replacement date is added at the end so the course still delivers its hours. */
@@ -373,7 +390,9 @@ function syncEnroll(){
       }
       s.times[i].a = newA;
       s.times[i].b = newB;
+      var tn=document.getElementById('st_'+i);if(tn&&tn.value){if(!s.trainerIds)s.trainerIds=[];s.trainerIds[i]=tn.value;}
     }
+    autoAllocateTrainerSessions();
     /* the end-date picker only counts as an override when the grid on screen still
        matches the current session count — otherwise it holds a stale last date */
     var en = document.getElementById('e_end');
@@ -662,8 +681,8 @@ function renderEnroll(){
     }
   }
   if(!E.trainerAssignments)E.trainerAssignments=[];
-  h+='<div class="ms" style="margin-top:14px"><div class="msh">Additional trainer time</div><div class="note" style="margin-top:0;font-size:11.5px">Each person receives independent start/end dates and credited hours, regardless of session count.</div>';
-  E.trainerAssignments.forEach(function(a,ix){h+='<div class="frow" data-taix="'+ix+'"><div class="field"><label class="flab">Trainer</label>'+trainerSelect('ta_tr_'+ix,a.trainerId||'',' data-ta="trainer"')+'</div><div class="field"><label class="flab">Start</label><input class="finp" data-ta="start" type="date" value="'+esc(a.start||'')+'"></div><div class="field"><label class="flab">End</label><input class="finp" data-ta="end" type="date" value="'+esc(a.end||'')+'"></div><div class="field"><label class="flab">Credited hours</label><input class="finp" data-ta="hours" type="number" min="0" step="0.25" value="'+esc(String(a.hours||''))+'"></div><button class="btn dgr sm" data-eact="trainer-remove" data-ta-remove="'+ix+'">Remove</button></div>';});
+  h+='<div class="ms" style="margin-top:14px"><div class="msh">Additional trainer time</div><div class="note" style="margin-top:0;font-size:11.5px">Instruction time is divided equally across all assigned trainers (two trainers = 50/50). Generated dates receive a suggested sequential assignment; Admin can change the trainer on any calendar session.</div>';
+  E.trainerAssignments.forEach(function(a,ix){h+='<div class="frow" data-taix="'+ix+'"><div class="field"><label class="flab">Trainer</label>'+trainerSelect('ta_tr_'+ix,a.trainerId||'',' data-ta="trainer"')+'</div><div class="field"><label class="flab">Start'+(a.suggestedStart?' · suggested '+esc(shortDate(a.suggestedStart)):'')+'</label><input class="finp" data-ta="start" type="date" value="'+esc(a.start||'')+'"></div><div class="field"><label class="flab">End</label><input class="finp" data-ta="end" type="date" value="'+esc(a.end||'')+'"></div><div class="field"><label class="flab">Equal credited hours</label><input class="finp" data-ta="hours" type="number" min="0" step="0.25" value="'+esc(String(a.hours||''))+'"></div><button class="btn dgr sm" data-eact="trainer-remove" data-ta-remove="'+ix+'">Remove</button></div>';});
   h+='<button class="btn sm" data-eact="trainer-add">+ Add trainer assignment</button></div></div>';
 
   /* ---- long-form course: a date range, not a session list ---- */
@@ -732,7 +751,7 @@ function renderEnroll(){
       '<span class="sdhint">show / hide dates</span></summary>';
 
     h += '<table class="sesstbl"><thead><tr><th>#</th><th colspan="3">Date</th><th></th>' +
-      '<th>Start</th><th>End</th><th></th></tr></thead><tbody>';
+      '<th>Start</th><th>End</th><th>Trainer / course boundary</th><th></th></tr></thead><tbody>';
     sd.dates.forEach(function(dt, i){
       var t = sd.times[i] || { a: sd.tstart, b: addMinutes(sd.tstart, sd.dur*60) };
       var bad = isBlockedDay(dt, sd.sat, sd.skips);
@@ -745,6 +764,7 @@ function renderEnroll(){
         '<td class="dow">'+dowOf(dt)+'</td>' +
         '<td><input class="finp" id="sa_'+i+'" type="time" value="'+esc(t.a)+'"></td>' +
         '<td><input class="finp" id="sb_'+i+'" type="time" value="'+esc(t.b)+'"></td>' +
+        '<td>'+trainerSelect('st_'+i,(sd.trainerIds||[])[i]||'','')+(courseEndingLabel(i)?'<small class="okbox" style="display:block;margin-top:4px;padding:4px">Ends: '+esc(courseEndingLabel(i))+'</small>':'')+'</td>' +
         '<td class="nudge"><button class="daybtn off" data-dropsess="'+i+'" ' +
           'title="Switch this class off — later dates move up" ' +
           'aria-label="Remove session '+(i+1)+'">&#10005;</button></td></tr>';
@@ -836,7 +856,7 @@ function renderEnroll(){
         (why ? '<div class="abr"><b>Reason for flag:</b> ' + esc(why) + '</div>' : '') +
         '<label class="btn pri blk" style="cursor:pointer;margin-top:11px">' +
           '&#8593; Re-upload Proof of Payment' +
-          '<input type="file" id="e_reupload" accept="image/*" style="display:none">' +
+          '<input type="file" id="e_reupload" accept="image/*" capture="environment" style="display:none">' +
         '</label>' +
         '<div class="abm" style="margin-top:8px;font-size:11.5px">For a minor enrollee the registrar may ' +
         'also contact the registered parent / guardian to assist with verification.</div>';
