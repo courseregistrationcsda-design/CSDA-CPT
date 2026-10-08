@@ -213,7 +213,17 @@ async function staticAndHttpChecks(port) {
   fs.writeFileSync(temp, extractScripts(html));
   const syntax = spawnSync(process.execPath, ['--check', temp], { encoding: 'utf8' });
   fs.rmSync(temp, { force: true });
-  check(syntax.status === 0, 'Inline JavaScript parses', (syntax.stderr || '').trim());
+  check(syntax.status === 0, 'Combined inline JavaScript parses', (syntax.stderr || '').trim());
+  const inlineBlocks = [...htmlDocument.matchAll(/<script(?![^>]*\bsrc=)(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m => m[1]);
+  const invalidInlineBlocks = [];
+  inlineBlocks.forEach((source, index) => {
+    const blockTemp = path.join(ROOT, `.smoke-inline-${index}.js`);
+    fs.writeFileSync(blockTemp, source);
+    const result = spawnSync(process.execPath, ['--check', blockTemp], { encoding: 'utf8' });
+    fs.rmSync(blockTemp, { force: true });
+    if (result.status !== 0) invalidInlineBlocks.push(`block ${index}: ${(result.stderr || '').trim()}`);
+  });
+  check(invalidInlineBlocks.length === 0, 'Each inline script parses independently', invalidInlineBlocks.join('\n'));
   for (const name of fs.readdirSync(moduleDir).filter(f => f.endsWith('.js')).sort()) {
     const result = spawnSync(process.execPath, ['--check', path.join(moduleDir, name)], { encoding:'utf8' });
     check(result.status === 0, `Module ${name} parses`, (result.stderr || '').trim());
