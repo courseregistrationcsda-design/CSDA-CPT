@@ -1,17 +1,17 @@
 {
-  "generatedAt": "2026-10-02T17:59:10.192Z",
-  "cacheVersion": "csda-toolkit-35ff7ce93d0f",
+  "generatedAt": "2026-10-08T08:25:23.087Z",
+  "cacheVersion": "csda-toolkit-94c377171628",
   "mainDocument": {
-    "bytes": 595466,
-    "gzipBytes": 231651,
-    "brotliBytes": 204268,
-    "inlineCssBytes": 79164,
-    "inlineJavaScriptBytes": 445559,
+    "bytes": 397936,
+    "gzipBytes": 182650,
+    "brotliBytes": 167422,
+    "inlineCssBytes": 91238,
+    "inlineJavaScriptBytes": 234915,
     "embeddedImageCount": 6,
     "embeddedImageDecodedBytes": 108825,
-    "mediaQueryCount": 18,
-    "keyframeCount": 17,
-    "externalScriptCount": 0,
+    "mediaQueryCount": 26,
+    "keyframeCount": 20,
+    "externalScriptCount": 8,
     "externalStylesheetCount": 0
   },
   "embeddedImages": [
@@ -55,13 +55,13 @@
   "files": [
     {
       "file": "index.html",
-      "bytes": 595466,
-      "sha256": "83a3a513c1723147f64f00b4ad7f0ea542249877d83b1d3e81c5a204f3fc00a6"
+      "bytes": 397936,
+      "sha256": "1d66151e379d74f010c75ffe824d39f3186b4190b56b91791406e67ae4d7363c"
     },
     {
       "file": "sw.js",
-      "bytes": 2839,
-      "sha256": "29898d723d8eccc426d15d3b972d1348baecb3db4b5dc8eb9066bed30237e192"
+      "bytes": 3083,
+      "sha256": "beb80daec0d4415887a04face6db7dba4035a13d9f1423f07ac2215ee8100eac"
     },
     {
       "file": "manifest.webmanifest",
@@ -77,6 +77,46 @@
       "file": "favicon.ico",
       "bytes": 19145,
       "sha256": "92cc10b37f51ba0e118eefc4f8d6f35f7c6b2e68e57f946c2c6ac9c06f1785a1"
+    },
+    {
+      "file": "modules/accessibility.js",
+      "bytes": 1688,
+      "sha256": "59f0b8ca1bd05238164a67fb3681a38ab93a78913d3089835839a71d617af49b"
+    },
+    {
+      "file": "modules/admin-interface.js",
+      "bytes": 115183,
+      "sha256": "5d7da872c99af37eb4bf919474f1b5d0fc630c3ed16844671679270f60a45bf6"
+    },
+    {
+      "file": "modules/backup-engine.js",
+      "bytes": 17588,
+      "sha256": "f72bc5a3e63d49d744c14becbe2b73af8ee2c6a220790f17f8378080dbcb4d2b"
+    },
+    {
+      "file": "modules/data-store.js",
+      "bytes": 49153,
+      "sha256": "d30b0d47a1546e088b01385f6a036695c2bb05edd3192c372d1254d5a8bc2429"
+    },
+    {
+      "file": "modules/domain-rules.js",
+      "bytes": 23680,
+      "sha256": "b7d0e368200199036a20fc7e8646e2cb5e34c4393c6dab3fe08b34f634b4d0fe"
+    },
+    {
+      "file": "modules/enrollment.js",
+      "bytes": 94949,
+      "sha256": "575e861e4e76d6831293a67a58325737c93cec10a7f081ca86eba8ecd7f6ca3f"
+    },
+    {
+      "file": "modules/guide-search.js",
+      "bytes": 17833,
+      "sha256": "25123665d7554f7fa6f1f661a5935dae24e874cb1b1bd7795b0ba5c29c93ea37"
+    },
+    {
+      "file": "modules/lifecycle-audit.js",
+      "bytes": 23564,
+      "sha256": "c4a5399ac6b5b7cc5273a765dc7c5884b15f77a3388d41ae5125f9808430d1f4"
     },
     {
       "file": "icons/icon-192.png",

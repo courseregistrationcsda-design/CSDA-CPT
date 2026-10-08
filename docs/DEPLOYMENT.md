@@ -67,6 +67,8 @@ Use synthetic data only:
 - Confirm the six-step progress bar.
 - Confirm Discount Options include resulting price and savings.
 - Confirm facility workstations remain on the left and contextual session panel remains on the right.
+- Using synthetic artwork, upload, drag, zoom, rotate, apply, save, reopen, and remove one course image.
+- Confirm hidden course artwork is dimmed with an Inactive label and returns to full color on hover/focus.
 - Test at 320×568 and 1440×900.
 - Test offline repeat load after one connected load.
 

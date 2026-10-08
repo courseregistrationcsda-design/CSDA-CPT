@@ -4,7 +4,8 @@ const fs=require('fs'),path=require('path'),crypto=require('crypto');
 const CleanCSS=require('clean-css'); const terser=require('terser');
 const root=path.resolve(__dirname,'..'), out=path.join(root,'release','hosted'), assets=path.join(out,'assets');
 fs.rmSync(out,{recursive:true,force:true}); fs.mkdirSync(assets,{recursive:true});
-const source=fs.readFileSync(path.join(root,'index.html'),'utf8'); let html=source;
+const sourceDocument=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const source=sourceDocument.replace(/<script src="(modules\/[^"]+\.js)"><\/script>/g,(all,rel)=>'<script>'+fs.readFileSync(path.join(root,rel),'utf8')+'</script>'); let html=source;
 const seen=new Map();
 html=html.replace(/data:image\/([^;]+);base64,([A-Za-z0-9+/=]+)/g,(all,type,b64)=>{
   if(seen.has(all)) return seen.get(all);

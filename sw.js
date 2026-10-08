@@ -8,12 +8,20 @@
  * Bump CACHE on every deploy; old caches are dropped on activate.
  */
 
-var CACHE = 'csda-toolkit-35ff7ce93d0f';
+var CACHE = 'csda-toolkit-94c377171628';
 
 var PRECACHE = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
+  '/modules/backup-engine.js',
+  '/modules/lifecycle-audit.js',
+  '/modules/admin-interface.js',
+  '/modules/enrollment.js',
+  '/modules/data-store.js',
+  '/modules/accessibility.js',
+  '/modules/domain-rules.js',
+  '/modules/guide-search.js',
   '/favicon.ico',
   '/icons/icon-192.webp',
   '/icons/icon-512.webp',

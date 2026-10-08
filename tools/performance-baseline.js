@@ -23,6 +23,7 @@ const embedded = [...html.matchAll(/data:image\/([a-zA-Z0-9.+-]+);base64,([a-zA-
 
 const files = [
   'index.html', 'sw.js', 'manifest.webmanifest', 'vercel.json', 'favicon.ico',
+  ...fs.readdirSync(path.join(ROOT, 'modules')).filter(name => name.endsWith('.js')).sort().map(name => 'modules/' + name),
   'icons/icon-192.png', 'icons/icon-192.webp', 'icons/icon-512.png',
   'icons/icon-512.webp', 'icons/maskable-512.png', 'icons/apple-touch-icon.png'
 ].map(name => {
