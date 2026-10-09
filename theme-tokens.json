@@ -1,0 +1,44 @@
+{
+  "light": {
+    "globalSystemBackgrounds": {
+      "base-bg": "#F6F7FB",
+      "surface-card": "#FFFFFF",
+      "surface-inset": "#EEF1F6"
+    },
+    "typography": {
+      "text-primary": "#182033",
+      "text-secondary": "#5B6478",
+      "text-accent": "#FFFFFF"
+    },
+    "brandInteractiveAccents": {
+      "primary-brand": "#6D28D9",
+      "action-blue": "#2563EB",
+      "neutral-control": "#94A3B8"
+    },
+    "statusUtility": {
+      "success": "#047857",
+      "warning": "#B45309"
+    }
+  },
+  "dark": {
+    "globalSystemBackgrounds": {
+      "base-bg": "#0B1020",
+      "surface-card": "#161D33",
+      "surface-inset": "#10172A"
+    },
+    "typography": {
+      "text-primary": "#F8FAFC",
+      "text-secondary": "#AEB8D0",
+      "text-accent": "#FFFFFF"
+    },
+    "brandInteractiveAccents": {
+      "primary-brand": "#7C3AED",
+      "action-blue": "#60A5FA",
+      "neutral-control": "#64748B"
+    },
+    "statusUtility": {
+      "success": "#34D399",
+      "warning": "#F59E0B"
+    }
+  }
+}
