@@ -12,4 +12,4 @@ Generated from `index.html`.
 | csda-logo-full | png | 23,383 | 31,180 |
 
 **Total decoded embedded-image bytes:** 108,825  
-**HTML bytes:** 406,030
+**HTML bytes:** 407,402

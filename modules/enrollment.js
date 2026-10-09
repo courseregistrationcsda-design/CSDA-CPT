@@ -230,6 +230,7 @@ document.getElementById('enrollBtn').onclick = function(){ openEnroll(null); };
 document.getElementById('rentBtn').onclick = openRent;
 document.getElementById('rClose').onclick = function(){ closeWithDataCheck('rent'); };
 
+document.getElementById('rBody').addEventListener('change',function(e){if(e.target&&e.target.id==='rf_org_mode'&&rentForm){rentForm.name=(document.getElementById('rf_name')||{}).value||rentForm.name;rentForm.purpose=(document.getElementById('rf_purpose')||{}).value||rentForm.purpose;rentForm.hrs=parseFloat((document.getElementById('rf_hrs')||{}).value)||rentForm.hrs;rentForm.orgMode=e.target.value;rentForm.org=e.target.value==='CSDA'?'CSDA':'';renderRent();var o=document.getElementById('rf_org');if(o)o.focus();}});
 document.getElementById('rBody').addEventListener('click', function(e){
   var kc = e.target.closest('[data-kit]');
   if (kc && rentForm) {
@@ -248,7 +249,7 @@ document.getElementById('rBody').addEventListener('click', function(e){
   var ref = t.getAttribute('data-sess');
   if (a === 'start') {
     rentEdit = null; rentOpen = null;
-    rentForm = { unitId: t.getAttribute('data-unit'), hrs: 1, name:'', org:'', purpose:'',
+    rentForm = { unitId: t.getAttribute('data-unit'), hrs: 1, name:'', org:'CSDA', orgMode:'CSDA', purpose:'',
                  kit: { laptop:true, tablet:true, lcable:true, wcable:true, mouse:true, pen:true, bag:true },
                  note:'' };
     renderRent();
@@ -1660,7 +1661,7 @@ clr.onclick = function(){ qEl.value = ''; onSearch(); qEl.focus(); };
 var themeBtn = document.getElementById('theme');
 function paintChrome(mode){
   var tc = document.getElementById('tcolor');
-  if (tc) tc.setAttribute('content', mode === 'dark' ? '#070B14' : '#EFF1F5');
+  if (tc) tc.setAttribute('content', mode === 'dark' ? '#0B1020' : '#F6F7FB');
 }
 function applyTheme(mode){
   document.documentElement.setAttribute('data-theme', mode);

@@ -1532,6 +1532,12 @@ function migrateDB(){
     if (r.baseline === undefined) r.baseline = null;
   });
 
+  /* The approved Shared Service Facility individual workstation rate is fixed at
+     ₱80 per hour. Existing closed/active rental sessions retain their recorded rate;
+     this updates the catalogue rate used by all newly opened sessions. */
+  var hourlyFacility=(DB.items||[]).filter(function(i){return i.id==='ssf-hourly';})[0];
+  if(hourlyFacility)hourlyFacility.price=80;
+
   /* The uploaded 2026 course sheet is authoritative for active listings. Preserve only
      old courses referenced by saved enrollments, and hide those archival rows so record
      names remain readable without leaving obsolete courses in the sales catalogue. */

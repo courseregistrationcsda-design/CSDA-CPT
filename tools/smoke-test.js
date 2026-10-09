@@ -76,8 +76,11 @@ async function staticAndHttpChecks(port) {
   check(/<meta\s+name="viewport"/i.test(html), 'Responsive viewport configured');
   check(/id="feed"/.test(html), 'Catalogue feed mount exists');
   check(/id="q"/.test(html), 'Search control exists');
+  check(htmlDocument.indexOf('id="q"') > htmlDocument.indexOf('id="dir"') && /catalogue-search/.test(htmlDocument), 'Catalogue search is positioned below category filters instead of in the header');
   check(/id="enrollBtn"/.test(html), 'Enrollment entry point exists');
   check(/id="adminBtn"/.test(html), 'Admin entry point exists');
+  check(/class="header-actions"/.test(htmlDocument) && htmlDocument.indexOf('class="header-actions"') > htmlDocument.indexOf('class="brand"'), 'Header controls stay grouped on the far right away from branding');
+  check(/--base-bg:#F6F7FB/.test(html) && /--base-bg:#0B1020/.test(html) && /--primary-brand:#6D28D9/.test(html) && /--primary-brand:#7C3AED/.test(html), 'Light and dark modes use the semantic wallet design tokens');
   check(/id="rentBtn"/.test(html), 'Facility-rental entry point exists');
   check(/id="printarea"/.test(html), 'Print area exists');
   check(/prefers-reduced-motion/.test(html), 'Reduced-motion support exists');
@@ -88,6 +91,8 @@ async function staticAndHttpChecks(port) {
   check(/trapModalFocus/.test(html) && /modalReturnFocus/.test(html), 'Overlay focus management present');
   check(/\[role="checkbox"\],\[role="radio"\]/.test(html), 'Custom-control keyboard support present');
   check(/rentstage\.choosing/.test(html) && /rentFormRight/.test(html), 'Facility split-panel motion present');
+  check(/["']id["']:\s*["']ssf-hourly["']/.test(html) && /["']price["']:\s*80/.test(html) && /hourlyFacility\.price=80/.test(html) && /i\.id==='ssf-hourly'/.test(html) && /₱80 per hour/.test(html), 'Facility display and new sessions use the ₱80 hourly item, not the ₱4,800 lab block');
+  check(/\['user name','office','purpose','booked time','billed amount'\]/.test(html) && /orgMode:'CSDA'/.test(html) && /value=\\?"Others/.test(html), 'Rental CSV has five approved columns and office defaults to CSDA with Others option');
   check(/table-scroll-cue/.test(html) && /Swipe to see more/.test(html), 'Mobile table scroll cue present');
   check(/class=\\?"enprogress/.test(html) && /ENROLL_TABS\.length/.test(html), 'Explicit enrollment progress present');
   check(/Finalize and create PDF/.test(html) && /data-eact=\\?"saverec/.test(html), 'Final enrollment actions clarified');
@@ -242,7 +247,7 @@ async function staticAndHttpChecks(port) {
   check(fs.readdirSync(moduleDir).filter(f => f.endsWith('.js')).every(f => swSource.includes('/modules/' + f)), 'Application modules are included in offline precache');
   check(/sourceDocument\.replace/.test(fs.readFileSync(path.join(ROOT,'tools','build-hosted.js'),'utf8')), 'Hosted build re-bundles modules into a standalone deployment document');
 
-  const jsonFiles = ['package.json', 'package-lock.json', 'vercel.json', 'manifest.webmanifest'];
+  const jsonFiles = ['package.json', 'package-lock.json', 'vercel.json', 'manifest.webmanifest', 'theme-tokens.json'];
   for (const name of jsonFiles) {
     try { JSON.parse(fs.readFileSync(path.join(ROOT, name), 'utf8')); check(true, `${name} parses`); }
     catch (e) { check(false, `${name} parses`, e.message); }

@@ -410,6 +410,7 @@ function adminGeneralGuidelines(){
   '<div class="ms"><div class="msh">6 · Refund control</div><ol><li>The app calculates overpayment from approved payments minus current net total.</li><li>Issue the refund outside the app through the authorized channel.</li><li>Enter the exact refund amount and reference, upload the refund receipt, independently verify it, and press <b>Confirm refund completed</b>.</li><li>Do not confirm planned, partial, or untraceable refunds.</li></ol></div>'+
   '<div class="ms"><div class="msh">7 · Document release</div><ol><li>Resolve every item in Certification Clearance Pending; the list is record-specific.</li><li>After approval, compare both previews with the source record: learner, course, hours, trainer, Administrator, and date.</li><li>Use separate Print / Save actions for the Clearance Form and Certificate.</li><li>Release only to authorized recipients and record corrections through the enrollment/audit workflow—not by editing a saved PDF.</li></ol></div>'+
   '<div class="ms"><div class="msh">8 · Backup, restore, privacy, and exceptions</div><ol><li>Create regular password-protected CSV ZIP backups. The package contains encrypted related CSV tables, a hashed manifest, and referenced encrypted receipt, refund, artwork, and trainer media; store passwords separately.</li><li>Inspect imports before choosing Replace or Merge. Replace substitutes the local session; Merge retains local data and combines recognized records.</li><li>Use Today / Work Queue local search and filters to narrow records by learner, reference, course, trainer, date, status, payment, clearance, and refund. Search terms stay on the device.</li><li>Review reminder thresholds regularly. Reminders identify work only and never change a gate automatically.</li><li>Retention uses guarded manual archive only—no automatic deletion. Financial and TESDA-held records remain protected; every archive and restore action records the Administrator and reason.</li><li>Do not export or disclose learner, guardian, receipt, or payment data without authorization.</li><li>Never invent evidence or bypass gates. Correct the source record; escalate true policy exceptions to authorized management and preserve the decision in official notes.</li></ol></div>'+
+  '<div class="ms"><div class="msh">Shared Service Facility rental</div><p>The approved individual workstation fee is <b>₱80 per hour</b>, pro-rated by the minute actually used. Newly opened sessions use this rate; existing sessions retain the rate recorded when they were opened.</p></div>'+
   '<div class="okbox"><b>End-of-shift check</b><br>Save active work · review unresolved payments and audits · create a protected backup when required · close Admin access on shared devices.</div></div></div>';
 }
 function adminCompletionAudits(){var rows=(DB.records||[]).filter(function(r){return lifecycleOf(r).state===TIMELINE_DONE;}).sort(function(a,b){var ad=((a.sched||{}).end||(a.sched||{}).start||''),bd=((b.sched||{}).end||(b.sched||{}).start||'');return ad.localeCompare(bd);});var h='<div class="note" style="margin-top:0">Completed enrollments appear here for payment, portfolio, competency, attendance, trainer, and final Admin clearance.</div>';if(!rows.length)return h+'<div class="lifeempty">No completed enrollments awaiting audit.</div>';rows.forEach(function(r){var c=r.certification||{},done=!!c.finalized;h+='<div class="reccard"><div class="rch"><div><div class="rcref">'+esc(r.ref)+'</div><div class="rcname">'+esc((r.student||{}).name||'Unnamed student')+'</div></div><span class="lifepill '+(done?'almost':'pending')+'">'+(done?'Cleared':'Pending Audit')+'</span></div><div class="rccourses">'+esc((r.courses||[]).map(function(id){var i=itemById(id);return i?i.n:id;}).join(' · '))+'</div><button class="btn '+(done?'':'pri')+' sm" data-auditopen="'+esc(r.ref)+'">'+(done?'Open clearance':'Continue audit')+'</button></div>';});return h;}
@@ -852,7 +853,8 @@ var rentOpen = null;          // ref of the unit whose detail card is expanded
 var rentEdit = null;          // id of the session being edited
 
 function facilityItem(){
-  return (DB.items || []).filter(function(i){ return i.facility; })[0] || null;
+  return (DB.items || []).filter(function(i){ return i.id==='ssf-hourly'; })[0] ||
+    (DB.items || []).filter(function(i){ return i.facility&&+i.price===80; })[0] || null;
 }
 function facilityRate(){ var f = facilityItem(); return f ? (+f.price || 80) : 80; }
 function nowHHMM(){
@@ -975,8 +977,7 @@ function renderRent(){
     h += '<div class="ms rentformpanel"><div class="askbox"><div class="askq">Start a session on <b>'+esc(un.name||'')+'</b></div>' +
       '<div class="frow"><div class="field"><label class="flab">User\u2019s name <span class="req">*</span></label>' +
         '<input class="finp" id="rf_name" value="'+esc(rentForm.name||'')+'"></div>' +
-      '<div class="field"><label class="flab">Office / school</label>' +
-        '<input class="finp" id="rf_org" value="'+esc(rentForm.org||'')+'"></div></div>' +
+      '<div class="field"><label class="flab">Office</label><select class="finp" id="rf_org_mode"><option value="CSDA"'+(rentForm.orgMode!=='Others'?' selected':'')+'>CSDA</option><option value="Others"'+(rentForm.orgMode==='Others'?' selected':'')+'>Others</option></select>'+(rentForm.orgMode==='Others'?'<input class="finp" id="rf_org" value="'+esc(rentForm.org==='CSDA'?'':rentForm.org||'')+'" placeholder="Enter office / organization" style="margin-top:7px">':'')+'</div></div>' +
       '<div class="frow"><div class="field"><label class="flab">Purpose</label>' +
         '<input class="finp" id="rf_purpose" value="'+esc(rentForm.purpose||'')+'" ' +
         'placeholder="Encoding, design work, research\u2026"></div>' +
@@ -1040,7 +1041,7 @@ function renderRent(){
       '<td class="r"><b>'+done.reduce(function(a,x){return a+x.mins;},0)+' min</b></td>' +
       '<td class="r mono grand"><b>'+money(done.reduce(function(a,x){return a+x.net;},0))+'</b></td><td></td></tr>';
     h += '</tbody></table>';
-    h += '<button class="btn" data-ract="csv" style="margin-top:11px">&#8595; Download the rental ledger (all days)</button>';
+    h += '<button class="btn" data-ract="csv" style="margin-top:11px">&#8595; Download rental report CSV</button>';
   }
   h += '</div>';
 
@@ -1106,9 +1107,11 @@ function soundAlarm(){
 function startSession(){
   var g = function(id){ var n = document.getElementById(id); return n ? n.value : ''; };
   var nm = g('rf_name').trim();
+  var orgMode=g('rf_org_mode')||'CSDA',org=orgMode==='Others'?g('rf_org').trim():'CSDA';
   var hrs = parseFloat(g('rf_hrs')) || 1;
   var mins = Math.round(hrs * 60);
   if (!nm) { toast('Enter the user\u2019s name', true); return; }
+  if(orgMode==='Others'&&!org){toast('Enter the other office or organization',true);return;}
   if (!mins || mins < 5) { toast('Book at least half an hour', true); return; }
   var u = (DB.units||[]).filter(function(x){ return x.id === rentForm.unitId; })[0];
   if (!u) { toast('That workstation is gone', true); return; }
@@ -1118,7 +1121,7 @@ function startSession(){
   DB.cfg.rseq = (DB.cfg.rseq || 1) + 1;
   DB.rentals.unshift({
     ref: ref, status:'active', date: today(), unitId: u.id, unit: u.name,
-    name: nm, org: g('rf_org').trim(), purpose: g('rf_purpose').trim(),
+    name: nm, org: org, purpose: g('rf_purpose').trim(),
     rate: facilityRate(), booked: mins, bookedHrs: hrs, added: 0, alarmed: false,
     kit: JSON.parse(JSON.stringify((rentForm && rentForm.kit) || {})),
     note: g('rf_note').trim(),
@@ -1161,46 +1164,14 @@ function printSlip(ref){
   printDoc(sur + '_' + String(se.ref||'').replace(/\D+/g,''));
 }
 
-/* ---------- the rental ledger ----------
-   One file holding every day ever recorded, each day in its own block with a
-   subtotal, oldest first. Nothing is dropped when a new day starts. */
+/* ---------- simplified rental report ----------
+   One row per session with only the approved operational columns. */
 function rentalCSV(){
-  var all = (DB.rentals || []).slice();
-  var days = {};
-  all.forEach(function(x){ (days[x.date] = days[x.date] || []).push(x); });
-  var dates = Object.keys(days).sort();                      // chronological, never pruned
-  var COLS = ['ref','unit','user','office_school','purpose','equipment','notes',
-              'date','time_in','time_out','hours','minutes','rate_per_hour','amount','status'];
-  var rows = [];
-  rows.push(csvCell('CSDA Digital Entertainment Exchange \u2014 Facility Rental Ledger'));
-  rows.push([csvCell('Exported'), csvCell(today()), csvCell('Days on record'), csvCell(dates.length)].join(','));
-  rows.push('');
-
-  var gMins = 0, gAmt = 0;
-  dates.forEach(function(d){
-    var list = days[d].slice().sort(function(a, b){ return (a.startMs||0) - (b.startMs||0); });
-    var dMins = 0, dAmt = 0;
-    rows.push([csvCell('DATE'), csvCell(d), csvCell(prettyDate(d)),
-               csvCell('Sessions'), csvCell(list.length)].join(','));
-    rows.push(COLS.join(','));
-    list.forEach(function(x){
-      var mins = x.status === 'closed' ? x.mins : minsUsed(x);
-      var amt  = x.status === 'closed' ? x.net  : netOf(x);
-      dMins += mins; dAmt += amt;
-      var kit = x.kit ? RENT_KIT.filter(function(k){ return x.kit[k[0]]; })
-                                .map(function(k){ return k[1]; }).join('; ') : '';
-      rows.push([x.ref, x.unit, x.name, x.org, x.purpose, kit, x.note || '',
-                 x.date, x.inT, x.outT || '',
-                 (mins / 60).toFixed(2), mins, x.rate, amt.toFixed(2), x.status].map(csvCell).join(','));
-    });
-    rows.push([csvCell('Day total'), '', '', '', '', '', '', csvCell(d), '', '',
-               csvCell((dMins / 60).toFixed(2)), csvCell(dMins), '', csvCell(dAmt.toFixed(2)), ''].join(','));
-    rows.push('');
-    gMins += dMins; gAmt += dAmt;
+  var rows=[['user name','office','purpose','booked time','billed amount'].map(csvCell).join(',')];
+  (DB.rentals||[]).slice().sort(function(a,b){return (a.startMs||0)-(b.startMs||0);}).forEach(function(x){
+    var booked=+x.booked||Math.round((+x.bookedHrs||0)*60),amount=x.status==='closed'?+x.net||0:netOf(x);
+    rows.push([x.name||'',x.org||'CSDA',x.purpose||'',fmtDuration(booked),amount.toFixed(2)].map(csvCell).join(','));
   });
-
-  rows.push([csvCell('GRAND TOTAL'), '', '', '', '', '', '', csvCell(dates.length + ' days'), '', '',
-             csvCell((gMins / 60).toFixed(2)), csvCell(gMins), '', csvCell(gAmt.toFixed(2)), ''].join(','));
   return rows.join('\r\n');
 }
 function rentalCSVName(){ return 'CClab_rental_' + today(); }

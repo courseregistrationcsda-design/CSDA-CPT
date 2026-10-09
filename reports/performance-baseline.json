@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-10-08T12:59:56.305Z",
-  "cacheVersion": "csda-toolkit-036d0fb20a68",
+  "generatedAt": "2026-10-09T08:39:24.300Z",
+  "cacheVersion": "csda-toolkit-344851913014",
   "mainDocument": {
-    "bytes": 406030,
-    "gzipBytes": 184872,
-    "brotliBytes": 169194,
-    "inlineCssBytes": 91797,
+    "bytes": 407402,
+    "gzipBytes": 185152,
+    "brotliBytes": 169492,
+    "inlineCssBytes": 92992,
     "inlineJavaScriptBytes": 241519,
     "embeddedImageCount": 6,
     "embeddedImageDecodedBytes": 108825,
@@ -55,18 +55,18 @@
   "files": [
     {
       "file": "index.html",
-      "bytes": 406030,
-      "sha256": "e46005ae1a3495fdf6eccf1697eb021f44db39281ebc86bd2fb0c9fe583c54fc"
+      "bytes": 407402,
+      "sha256": "5f7dc4ae5b3cf02d374f95a1f4d239b0af09de4777ead46ca2896aaa6f833325"
     },
     {
       "file": "sw.js",
       "bytes": 3196,
-      "sha256": "d3c3d7590f5d3fc5116e84f638059a68ad5af6b5b71ffb158e613b1a186da289"
+      "sha256": "541d3cd34058bae8e4974c72a102b5088311873d901f4bc5a77e91a048df85ff"
     },
     {
       "file": "manifest.webmanifest",
       "bytes": 1037,
-      "sha256": "ce875c9c0d4679add41d0209166a95044fb013e88fecf3f5364322ff4209b12d"
+      "sha256": "4c7903d4281212e70b7dcfc55402fe183e717f6e5ddb78cd25b909df94e2b99c"
     },
     {
       "file": "vercel.json",
@@ -85,8 +85,8 @@
     },
     {
       "file": "modules/admin-interface.js",
-      "bytes": 116407,
-      "sha256": "c2620dd1c35721d6682f99392df52401ea90367a0e4eb6bbab19d44911fff259"
+      "bytes": 115599,
+      "sha256": "4836a3a6f1ec4c3d2dc30ca0a65ba01c9867eb798580c28d36e5be5ef6ab4dc3"
     },
     {
       "file": "modules/backup-engine.js",
@@ -95,8 +95,8 @@
     },
     {
       "file": "modules/data-store.js",
-      "bytes": 49153,
-      "sha256": "d30b0d47a1546e088b01385f6a036695c2bb05edd3192c372d1254d5a8bc2429"
+      "bytes": 49533,
+      "sha256": "cd9c8b6ed03909162b79f719ad176319a768170eb242f8a831ac502d15c965ea"
     },
     {
       "file": "modules/domain-rules.js",
@@ -105,8 +105,8 @@
     },
     {
       "file": "modules/enrollment.js",
-      "bytes": 101756,
-      "sha256": "dc1eccae65f648556decfe707ace4963cde0c49012d4b5b32bf77f426ee940c9"
+      "bytes": 102297,
+      "sha256": "b1dc7d72cf3971d19f9fa63a64dbbb8b62119bbb4ed8eef5a25adf48a8f2c7d7"
     },
     {
       "file": "modules/guide-search.js",
