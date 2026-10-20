@@ -24,6 +24,7 @@
 <!-- === end injected block === -->
 
 <meta name="application-name" content="CSDA Pricing Toolkit">
+<meta name="application-version" content="2.0.0">
 <meta name="apple-mobile-web-app-title" content="CSDA Pricing Toolkit">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -610,6 +611,39 @@ textarea.finp{resize:vertical;min-height:62px;line-height:1.5}
 .pcart,.abart{position:relative;overflow:hidden;background:var(--line);border-radius:10px}
 .pcart{aspect-ratio:16/9;margin-bottom:12px}
 .pcart img,.abart img{width:100%;height:100%;display:block;object-fit:cover}
+/* Catalogue covers use the supplied portrait, full-bleed visual language. Contrast is
+   guaranteed by a fixed dark scrim and dense bottom gradient rather than inferred
+   artwork tone, so every image remains readable in both application themes. */
+.pc:not(.ghost){aspect-ratio:2/3;min-height:430px;cursor:default;border-radius:20px}
+.pc:not(.ghost):hover{transform:translateY(-3px)}
+.pc:not(.ghost) .pcin{border-radius:inherit}
+.pc:not(.ghost) .pcfront{min-height:100%;padding:0;overflow:hidden;border-radius:20px;
+  background:#151326;border-color:rgba(255,255,255,.12);color:#fff;isolation:isolate}
+.pc:not(.ghost) .pcfront::before{display:none}
+.pccoverart,.pccoverfallback,.pccoverveil{position:absolute!important;inset:0;width:100%;height:100%}
+.pccoverart{object-fit:cover;z-index:-3!important}
+.pccoverfallback{z-index:-3!important;background:linear-gradient(145deg,#7148bc 0%,#3b246d 42%,#171126 100%)}
+.pccoverveil{z-index:-2!important;background:
+  linear-gradient(180deg,rgba(7,8,15,.18) 0%,rgba(7,8,15,.08) 30%,rgba(7,8,15,.55) 58%,rgba(7,8,15,.97) 100%),
+  linear-gradient(90deg,rgba(7,8,15,.42),transparent 72%)}
+.pccovercontent{position:absolute!important;z-index:2!important;inset:auto 0 0;padding:clamp(22px,8%,32px);
+  display:flex;flex-direction:column;align-items:flex-start;text-shadow:0 2px 16px rgba(0,0,0,.58)}
+.pccode{font-size:11px;font-weight:850;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;color:rgba(255,255,255,.9)}
+.pc:not(.ghost) .pcn{font-size:clamp(25px,2.15vw,34px);line-height:1.04;letter-spacing:-.035em;font-weight:850;color:#fff;max-width:12ch}
+.pc:not(.ghost) .pcm{display:flex;gap:8px 14px;flex-wrap:wrap;margin-top:14px;color:rgba(255,255,255,.82);
+  font-size:9px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+.pc:not(.ghost) .pcm span+span::before{content:'•';margin-right:14px;color:rgba(255,255,255,.55)}
+.pccoverrule{width:100%;height:1px;background:rgba(255,255,255,.32);margin:20px 0 18px}
+.pccoverbottom{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pc:not(.ghost) .pcr{font-size:clamp(18px,1.5vw,23px);font-weight:850;color:#fff}
+.pclearn{min-height:44px;padding:10px 16px;border:1px solid rgba(255,255,255,.72);border-radius:999px;
+  background:rgba(9,10,18,.42);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;
+  font:inherit;font-size:11px;font-weight:850;letter-spacing:.02em;cursor:pointer;text-shadow:none;
+  transition:background var(--agent-duration-chat) var(--agent-ease-swift),transform var(--agent-duration-chat) var(--agent-ease-swift)}
+.pclearn:hover{background:#fff;color:#161326;transform:translateY(-1px)}
+.pclearn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+@media(max-width:620px){.pc:not(.ghost){min-height:480px;aspect-ratio:3/4}.pc:not(.ghost) .pcn{font-size:30px}}
+@media(prefers-reduced-motion:reduce){.pclearn{transition:none}}
 /* Focused artwork is full-bleed. The stored luminance chooses a strong light or dark
    readability veil; the gradient is deliberately opaque enough for mixed artwork. */
 .pcback.hasart{isolation:isolate;color:var(--art-text);background:var(--art-bg);display:flex!important;
@@ -635,7 +669,7 @@ textarea.finp{resize:vertical;min-height:62px;line-height:1.5}
 .ab.hid:hover .abart img,.ab.hid:focus-within .abart img{filter:none;opacity:1}
 .abartflag{position:absolute;left:8px;top:8px;padding:4px 8px;border-radius:999px;background:rgba(7,11,20,.78);color:#fff;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
 .arteditor{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:14px;align-items:start}
-.artstage{position:relative;aspect-ratio:16/9;background:#111;border:1px solid var(--line2);border-radius:12px;overflow:hidden;cursor:grab;touch-action:none}
+.artstage{position:relative;aspect-ratio:2/3;max-height:560px;background:#111;border:1px solid var(--line2);border-radius:12px;overflow:hidden;cursor:grab;touch-action:none}
 .artstage:active{cursor:grabbing}.artstage canvas{width:100%;height:100%;display:block}
 .arttools{display:flex;flex-direction:column;gap:9px}.arttools .btn{width:100%}.artmove{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.artmove .btn{padding:8px 4px}
 .artempty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#bbb;font-size:12px;line-height:1.5;padding:20px;pointer-events:none}
@@ -1682,29 +1716,19 @@ function renderFeed(){
       var mlist = (it.modules || []).filter(function(m){ return m && (m.name || (m.lessons||[]).length); });
       var assigned = it.trainer ? trainerById(it.trainer) : null;
       shown_ix++;
-      html += '<div class="pc" data-item="'+it.id+'" tabindex="0" role="button" aria-expanded="false" ' +
-        'style="--gd:'+((shown_ix % 9) * 0.55).toFixed(2)+'s" ' +
-        'aria-label="'+esc((it.code ? it.code+' — ' : '')+it.n)+' — open course outline">' +
-        '<div class="pcin"><div class="pcface pcfront">' +
-        (it.art ? '<div class="pcart"><img src="'+esc(it.art)+'" alt="" loading="lazy"></div>' : '') +
-        (it.code ? '<div class="mini" style="margin-bottom:7px">'+esc(it.code)+'</div>' : '') +
+      html += '<div class="pc" data-item="'+it.id+'" tabindex="-1" ' +
+        'style="--gd:'+((shown_ix % 9) * 0.55).toFixed(2)+'s">' +
+        '<div class="pcin"><div class="pcface pcfront hasart art-'+(it.artTone||'dark')+'">' +
+        ((it.artFull||it.art) ? '<img class="pccoverart" src="'+esc(it.artFull||it.art)+'" alt="" loading="lazy">' : '<div class="pccoverfallback" aria-hidden="true"></div>') +
+        '<div class="pccoverveil" aria-hidden="true"></div><div class="pccovercontent">' +
+        (it.code ? '<div class="pccode">'+esc(it.code)+'</div>' : '') +
         '<div class="pcn">'+hi(it.n, tk)+'</div>' +
-        '<div class="pcm">' + (it.hrs ? '<span class="pcv">'+it.hrs+' hrs</span>' : '') +
-          (it.sess ? '<span class="pcv">'+it.sess+' sessions</span>' : '') +
-          (assigned ? '<span class="pcv">Trainer: '+esc(assigned.name)+'</span>' : '') +
-          ((it.modules||[]).length ? '<span class="pcv">'+it.modules.length+' modules'+(nLes?' · '+nLes+' lessons':'')+'</span>' : '') +
-          (it.unit ? '<span class="pcv">'+hi(it.unit, tk)+'</span>' : '') + '</div>' +
-        (it.titles && it.titles.length
-          ? '<div class="tlw"><div class="tlh">'+esc(it.tlab||'Course titles')+
-            (it.titles.length>1 ? ' · '+it.titles.length : '')+'</div><div class="tls">' +
-            it.titles.map(function(t){ return '<span class="tl">'+hi(t,tk)+'</span>'; }).join('') +
-            '</div></div>' : '') +
-        (it.note ? '<div class="pcnote">'+hi(it.note, tk)+'</div>' : '') +
-        (variance ? '<div class="vflag">Rate variance · '+money(rate)+'/hr vs '+P+c.baseline+' baseline</div>' : '') +
-        '<div class="pcp"><div class="pcr mono">'+(it.price!=null?money(it.price):'&mdash;')+'</div>' +
-        '<div class="pch">'+(rate?money(rate)+'/hr':'flat')+'<br>'+
-        (c.page==='Proposal'?'Proposal':'Page '+c.page)+'</div></div>' +
-        '<div class="pchint">Tap for the outline \u203A</div></div>' +
+        '<div class="pcm">' + (it.hrs ? '<span>'+it.hrs+' HRS</span>' : '') +
+          (it.sess ? '<span>'+it.sess+' SESSIONS</span>' : '') + '</div>' +
+        '<div class="pccoverrule"></div><div class="pccoverbottom">' +
+        '<div class="pcr mono">'+(it.price!=null?money(it.price):'&mdash;')+'</div>' +
+        '<button class="pclearn" data-open-course="'+it.id+'" aria-expanded="false" aria-label="Learn more about '+esc(it.n)+'">Learn More</button>' +
+        '</div></div></div>' +
 
         /* ---- reverse: what the course actually covers ---- */
         '<div class="pcface pcback'+((it.artFull||it.art)?' hasart art-'+(it.artTone||'dark'):'')+'" role="dialog" aria-modal="true" aria-label="'+esc(it.n)+' course outline" tabindex="-1">' +
@@ -2301,7 +2325,8 @@ function flipCard(card, on){
       setTimeout(function(){
         card.classList.remove('restoring');
         if (!anyOpen() && document.contains(card)) {
-          try { card.focus({preventScroll:true}); } catch(e){ try { card.focus(); } catch(_){} }
+          var returnControl=card.querySelector('[data-open-course]')||card;
+          try { returnControl.focus({preventScroll:true}); } catch(e){ try { returnControl.focus(); } catch(_){} }
         }
       }, 20);
     };
@@ -2309,9 +2334,8 @@ function flipCard(card, on){
     else finish();
     if (!feed.querySelector('.pc.flipped:not(.closing)')) showCardVeil(false);
   }
-  card.setAttribute('aria-expanded', on ? 'true' : 'false');
-  card.setAttribute('aria-label', (itemById(card.getAttribute('data-item')) || {}).n +
-    (on ? ' \u2014 course outline' : ' \u2014 open course outline'));
+  var opener = card.querySelector('[data-open-course]');
+  if (opener) opener.setAttribute('aria-expanded', on ? 'true' : 'false');
 }
 function unflipAll(except){
   var list = feed.querySelectorAll('.pc.flipped');
@@ -2328,7 +2352,9 @@ feed.addEventListener('click', function(e){
 
   if (e.target.closest('[data-flipback]')) { flipCard(card, false); return; }
   if (card.classList.contains('flipped')) return;   // reading the back: leave it alone
-
+  /* Course details open only from the visible Learn More control. The artwork and
+     surrounding card stay non-interactive, avoiding an oversized hidden action. */
+  if (!e.target.closest('[data-open-course]')) return;
   unflipAll(card);
   flipCard(card, true);
 });
@@ -2350,17 +2376,11 @@ window.addEventListener('resize', function(){
   });
 });
 
-/* keyboard: Enter or Space turns the card, Escape turns it back */
+/* Native button semantics activate Learn More with Enter/Space; Escape closes details. */
 feed.addEventListener('keydown', function(e){
   var card = e.target.closest && e.target.closest('.pc[data-item]');
   if (!card) return;
-  if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
-    if (e.target.closest('button')) return;         // let real buttons act normally
-    e.preventDefault();
-    var on = !card.classList.contains('flipped');
-    unflipAll(card);
-    flipCard(card, on);
-  } else if (e.key === 'Escape' && card.classList.contains('flipped')) {
+  if (e.key === 'Escape' && card.classList.contains('flipped')) {
     e.stopPropagation();
     flipCard(card, false);
   }
@@ -2420,9 +2440,13 @@ function drawCourseArt(){
   var empty = document.getElementById('artEmpty'); if (empty) empty.style.display='none';
   var z = document.getElementById('artZoom'); if (z) z.value=artEditor.zoom;
 }
-function loadCourseArt(src){
+function loadCourseArt(src, transform){
   var im = new Image();
-  im.onload = function(){ artEditor={img:im,zoom:1,rot:0,x:0,y:0,drag:false}; drawCourseArt(); };
+  im.onload = function(){
+    var t=transform||{};
+    artEditor={img:im,src:src,zoom:+t.zoom||1,rot:+t.rotation||0,x:+t.x||0,y:+t.y||0,drag:false};
+    drawCourseArt();
+  };
   im.onerror = function(){ toast('That artwork could not be opened',true); };
   im.src=src;
 }
@@ -2430,10 +2454,10 @@ function initCourseArtEditor(){
   var stage=document.getElementById('artStage'), canvas=document.getElementById('artCanvas');
   if (!stage || !canvas) return;
   artEditor=null;
-  if (draft && (draft.artFull || draft.art)) loadCourseArt(draft.artFull || draft.art);
+  if (draft && (draft.artFull || draft.art)) loadCourseArt(draft.artFull || draft.art, draft.artTransform);
   var start=null;
   stage.onpointerdown=function(e){ if(!artEditor||!artEditor.img)return; start={x:e.clientX,y:e.clientY,ox:artEditor.x,oy:artEditor.y}; stage.setPointerCapture(e.pointerId); };
-  stage.onpointermove=function(e){ if(!start||!artEditor)return; var r=stage.getBoundingClientRect(); artEditor.x=start.ox+(e.clientX-start.x)*960/r.width; artEditor.y=start.oy+(e.clientY-start.y)*540/r.height; drawCourseArt(); };
+  stage.onpointermove=function(e){ if(!start||!artEditor)return; var r=stage.getBoundingClientRect(); artEditor.x=start.ox+(e.clientX-start.x)*canvas.width/r.width; artEditor.y=start.oy+(e.clientY-start.y)*canvas.height/r.height; drawCourseArt(); };
   stage.onpointerup=stage.onpointercancel=function(){ start=null; };
 }
 function applyCourseArt(){
@@ -2441,30 +2465,28 @@ function applyCourseArt(){
   syncDraft();
   var im=artEditor.img, rot=((artEditor.rot%360)+360)%360, swap=rot===90||rot===270;
   var rw=swap?im.height:im.width, rh=swap?im.width:im.height;
-  var fullScale=Math.min(1,768/Math.max(rw,rh)), full=document.createElement('canvas');
-  full.width=Math.max(1,Math.round(rw*fullScale)); full.height=Math.max(1,Math.round(rh*fullScale));
-  var fx=full.getContext('2d'); fx.translate(full.width/2,full.height/2); fx.rotate(rot*Math.PI/180);
-  fx.drawImage(im,-im.width*fullScale/2,-im.height*fullScale/2,im.width*fullScale,im.height*fullScale);
-  var fullUri='', fq=.8;
-  try { do { fullUri=full.toDataURL('image/webp',fq); fq-=.08; } while(fullUri.length>100000&&fq>=.4); }
-  catch(e){ toast('Could not process that artwork',true); return; }
-  if(fullUri.length>100000){ toast('The full artwork is too detailed — choose a simpler image',true); return; }
-
-  var source=document.getElementById('artCanvas'), out=document.createElement('canvas');
-  out.width=512; out.height=288; out.getContext('2d').drawImage(source,0,0,512,288);
-  var uri='', q=.8;
-  try { do { uri=out.toDataURL('image/webp',q); q-=.08; } while(uri.length>70000&&q>=.4); }
-  catch(e){ toast('Could not process that artwork',true); return; }
-  if(uri.length>70000){ toast('Edited card crop is too detailed — choose a simpler image',true); return; }
-
-  /* Use the complete processed artwork—not the card crop—for contrast selection. */
-  var px=full.getContext('2d').getImageData(0,0,full.width,full.height).data,total=0,samples=0;
-  for(var pi=0;pi<px.length;pi+=64){
-    var alpha=px[pi+3]/255,rgb=(px[pi]*.299+px[pi+1]*.587+px[pi+2]*.114);
-    total+=rgb*alpha+255*(1-alpha);samples++;
-  }
-  draft.art=uri; draft.artFull=fullUri; draft.artTone=(total/Math.max(1,samples))>158?'light':'dark';
-  toast('Artwork applied — full image preserved for details; save the course to keep it'); renderAdmin();
+  /* Keep the uploaded source byte-for-byte when it needs no rotation. A rotated source
+     is rendered once at its original pixel dimensions to lossless PNG. No resizing,
+     quality loop, byte ceiling, or complexity rejection is applied. */
+  var fullUri=artEditor.src;
+  try {
+    if(rot){
+      var full=document.createElement('canvas'); full.width=rw; full.height=rh;
+      var fx=full.getContext('2d'); fx.translate(rw/2,rh/2); fx.rotate(rot*Math.PI/180);
+      fx.drawImage(im,-im.width/2,-im.height/2);
+      fullUri=full.toDataURL('image/png');
+    }
+    var source=document.getElementById('artCanvas');
+    var uri=source.toDataURL('image/png');
+    var px=source.getContext('2d').getImageData(0,0,source.width,source.height).data,total=0,samples=0;
+    for(var pi=0;pi<px.length;pi+=256){
+      var alpha=px[pi+3]/255,rgb=(px[pi]*.299+px[pi+1]*.587+px[pi+2]*.114);
+      total+=rgb*alpha+255*(1-alpha);samples++;
+    }
+    draft.art=uri; draft.artFull=fullUri; draft.artTone=(total/Math.max(1,samples))>158?'light':'dark';
+    draft.artTransform={zoom:artEditor.zoom,rotation:rot,x:artEditor.x,y:artEditor.y,aspect:'2:3'};
+  } catch(e){ toast('Could not process that artwork on this device',true); return; }
+  toast('Artwork applied at original quality with a lossless portrait cover — save the course to keep it'); renderAdmin();
 }
 function stashAdminIO(){
   var c = document.getElementById('csvio'); if (c) csvBuf = c.value;
@@ -2913,7 +2935,6 @@ document.getElementById('aBody').addEventListener('change', function(e){
   if (e.target.id === 'artFile' && e.target.files && e.target.files[0]) {
     var af=e.target.files[0];
     if (!/^image\/(jpeg|png|webp)$/i.test(af.type)) { toast('Choose a JPG, PNG, or WebP image',true); return; }
-    if (af.size > 12000000) { toast('Artwork is over 12 MB — choose a smaller source image',true); return; }
     var ar=new FileReader();
     ar.onload=function(){ loadCourseArt(String(ar.result||'')); };
     ar.readAsDataURL(af); return;

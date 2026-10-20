@@ -1,6 +1,6 @@
 {
   "name": "csda-pricing-toolkit",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "description": "Offline-capable pricing, quotation, enrollment, administration and facility-rental toolkit for CSDA.",
   "engines": {

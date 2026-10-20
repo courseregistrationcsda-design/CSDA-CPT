@@ -1,5 +1,6 @@
 {
   "name": "CSDA Pricing Toolkit",
+  "version": "2.0.0",
   "short_name": "CSDA Toolkit",
   "description": "Course pricing, quotations, bundles, payment schedules and enrollments for Cordillera School of Digital Arts, Inc.",
   "id": "/",

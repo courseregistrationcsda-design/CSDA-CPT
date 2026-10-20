@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-10-09T08:39:24.300Z",
-  "cacheVersion": "csda-toolkit-344851913014",
+  "generatedAt": "2026-10-09T10:33:54.976Z",
+  "cacheVersion": "csda-toolkit-f16e6edf7150",
   "mainDocument": {
-    "bytes": 407402,
-    "gzipBytes": 185152,
-    "brotliBytes": 169492,
+    "bytes": 407452,
+    "gzipBytes": 185167,
+    "brotliBytes": 169478,
     "inlineCssBytes": 92992,
     "inlineJavaScriptBytes": 241519,
     "embeddedImageCount": 6,
@@ -55,18 +55,18 @@
   "files": [
     {
       "file": "index.html",
-      "bytes": 407402,
-      "sha256": "5f7dc4ae5b3cf02d374f95a1f4d239b0af09de4777ead46ca2896aaa6f833325"
+      "bytes": 407452,
+      "sha256": "b228c8a3353c89d2c173443e7f27a6b76290064164ff1f57b76877fc15c784b2"
     },
     {
       "file": "sw.js",
       "bytes": 3196,
-      "sha256": "541d3cd34058bae8e4974c72a102b5088311873d901f4bc5a77e91a048df85ff"
+      "sha256": "159744ca9d6cd9bfea4b37860f638ff60c33e79423e3d4a0e54648d0c8b00482"
     },
     {
       "file": "manifest.webmanifest",
-      "bytes": 1037,
-      "sha256": "4c7903d4281212e70b7dcfc55402fe183e717f6e5ddb78cd25b909df94e2b99c"
+      "bytes": 1059,
+      "sha256": "931bc873afb5e81cddf245297cd22ed4312aab2a957b696bb2a1e016f0501052"
     },
     {
       "file": "vercel.json",

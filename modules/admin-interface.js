@@ -53,10 +53,10 @@ function renderAdmin(){
 }
 
 function courseArtEditorHTML(it){
-  return '<div class="course-dynamic"><div><div class="ms"><div class="msh">Course artwork &middot; 16:9</div>' +
-    '<div class="note" style="margin-top:0;font-size:12px">Upload an image, then drag to frame the 16:9 card crop. The focused detail preserves the complete optimized artwork; zoom and movement affect only the compact card.</div>' +
+  return '<div class="course-dynamic"><div><div class="ms"><div class="msh">Course artwork &middot; portrait cover</div>' +
+    '<div class="note" style="margin-top:0;font-size:12px">Upload a JPG, PNG, or WebP at any file size, then drag and zoom to frame the tall catalogue cover. Artwork is retained at original quality for offline use; the editor also saves a lossless portrait framing.</div>' +
     '<div class="arteditor"><div class="artstage" id="artStage">' +
-      '<canvas id="artCanvas" width="960" height="540" aria-label="Course artwork editor"></canvas>' +
+      '<canvas id="artCanvas" width="800" height="1200" aria-label="Portrait course artwork editor"></canvas>' +
       '<div class="artempty" id="artEmpty">Choose an image to begin<br>JPG, PNG, or WebP</div></div>' +
     '<div class="arttools"><label class="btn" style="cursor:pointer">Choose artwork' +
       '<input type="file" id="artFile" accept="image/jpeg,image/png,image/webp" style="display:none"></label>' +

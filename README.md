@@ -1,8 +1,10 @@
 # CSDA Pricing Toolkit
 
+**Current release: 2.0.0**
+
 Offline-capable course pricing, quotations, payment schedules, enrollment, administration, and Shared Service Facility operations for **Cordillera School of Digital Arts, Inc.**
 
-The readable application source remains a self-contained `index.html`. The production build generates a smaller hosted version with cacheable image assets while preserving an on-demand standalone HTML download.
+The readable application source uses `index.html` plus focused classic-script modules under `modules/`. The production build validates and bundles those modules into a smaller hosted version while preserving an on-demand standalone HTML download.
 
 ## Requirements
 
@@ -73,7 +75,9 @@ After assigning the final domain, update the canonical and social-preview URLs i
 
 | Path | Purpose |
 |---|---|
-| `index.html` | Single source of truth for the application |
+| `index.html` | Application shell, styles, shared runtime, and startup sequence |
+| `modules/` | Focused data, domain, enrollment, Admin, audit, backup, guide, and accessibility modules |
+| `theme-tokens.json` | Machine-readable semantic light/dark design tokens |
 | `sw.js` | Offline service worker; cache name is generated automatically |
 | `manifest.webmanifest` | PWA metadata and shortcuts |
 | `icons/`, `favicon.ico` | PWA and browser icons |
@@ -81,7 +85,9 @@ After assigning the final domain, update the canonical and social-preview URLs i
 | `docs/planning/` | UI/UX audit and phased improvement backlog |
 | `docs/testing/` | Regression documentation |
 | `docs/privacy/` | Local retention and sensitive-data guidance |
-| `reports/` | Implementation, performance, and asset reports |
+| `reports/` | Current generated reports; historical implementation reports are archived by release |
+| `RELEASE_NOTES.md` | Current stabilized release scope and compatibility notes |
+| `INPUT_INTAKE.md` | Structured staging template for future requests |
 | `usability/` | Synthetic-data usability-testing package |
 | `.github/workflows/` | GitHub Actions validation |
 | `vercel.json` | Vercel build/output and response-header configuration |
@@ -97,7 +103,7 @@ After assigning the final domain, update the canonical and social-preview URLs i
 
 Operational data is stored in the current browser profile. There is no application database or server-side record recovery. Clearing browser data, changing profiles, or losing the device can remove access to records.
 
-Use **Admin → CSV & Backup → Download full backup** and store exports only in an approved, access-controlled location. Review:
+Use **Admin → Governance → Backup & Restore → Download password-protected CSV backup ZIP** and store exports only in an approved, access-controlled location. Review:
 
 - [`docs/privacy/DATA_RETENTION_PRIVACY.md`](docs/privacy/DATA_RETENTION_PRIVACY.md)
 - [`docs/privacy/SENSITIVE_DATA_REGISTER.md`](docs/privacy/SENSITIVE_DATA_REGISTER.md)
@@ -112,4 +118,4 @@ The hosted app’s **Get app → Download app file** action downloads `standalon
 
 ## Current verification
 
-The latest automated smoke result is recorded in the phase reports. Browser-driven checks are optional because their operating-system library requirements are not available in every CI/sandbox environment.
+Version 2.0.0 uses the root `RELEASE_NOTES.md` as its release summary. Current generated metrics remain in `reports/`; pre-2.0 implementation history is under `reports/archive/pre-v2.0.0/`. Browser-driven checks remain optional in CI because Chrome runtime libraries are not available in every environment.
