@@ -8,22 +8,37 @@
  * Bump CACHE on every deploy; old caches are dropped on activate.
  */
 
-var CACHE = 'csda-toolkit-c1367bdeacfd';
+var CACHE = 'csda-toolkit-2c4eda416ba7';
 
 var PRECACHE = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
   '/modules/backup-engine.js',
+  '/modules/academic-ledger.js',
   '/modules/lifecycle-audit.js',
   '/modules/admin-interface.js',
   '/modules/enrollment.js',
   '/modules/data-store.js',
   '/modules/accessibility.js',
   '/modules/domain-rules.js',
+  '/modules/course-art-matrix.js',
+  '/modules/course-curriculum-v3.js',
+  '/modules/curriculum-intelligence.js',
+  '/modules/notification-workflow.js',
+  '/modules/tesda-followup.js',
+  '/modules/executive-intelligence.js',
+  '/modules/institutional-document-center.js',
+  '/modules/premium-interface.js',
+  '/modules/creative-course-artworks.js',
+  '/modules/launch-mode.js',
+  '/modules/capacity-intelligence.js',
+  '/modules/enrollment-realignment.js',
   '/modules/guide-search.js',
+  '/modules/automation-payroll.js',
   '/guides/csda-general-administrative-guidelines.pdf',
   '/guides/csda-general-administrative-guidelines.html',
+  '/docs/CSDA_VERSION3_COMPLETE_DOCUMENTATION.md',
   '/favicon.ico',
   '/assets/image-56f0f93f328f.png',
   '/assets/image-b979d5ea8445.png',

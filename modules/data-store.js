@@ -722,6 +722,23 @@ var DEFAULTS = {
         "unit": "per workshop"
     },
     {
+        "id": "wca07",
+        "code": "WCA07",
+        "c": "weekend-illustration",
+        "n": "Commercial Splash Art Production",
+        "price": 1499,
+        "sess": 1,
+        "hrs": 4,
+        "dur": 4.0,
+        "trainer": "",
+        "kw": "WCA07 Commercial Splash Art Production weekend illustration Chelsea M.",
+        "bundleable": true,
+        "hidden": false,
+        "modules": [],
+        "nofull": true,
+        "unit": "per workshop"
+    },
+    {
         "id": "wdi01",
         "code": "WDI01",
         "c": "weekend-illustration",
@@ -1350,133 +1367,7 @@ var DEFAULTS = {
       note:'Full Payment discount is forfeited under any installment plan.' }
   ],
   records: [],
-  trainers: [
-    {
-        "id": "tr_camille",
-        "name": "Camille",
-        "email": ""
-    },
-    {
-        "id": "tr_camille_jofel",
-        "name": "Camille / Jofel",
-        "email": ""
-    },
-    {
-        "id": "tr_camille_jofel_charles_louie",
-        "name": "Camille / Jofel / Charles / Louie",
-        "email": ""
-    },
-    {
-        "id": "tr_camille_jofel_geraldine_dexter",
-        "name": "Camille / Jofel / Geraldine / Dexter",
-        "email": ""
-    },
-    {
-        "id": "tr_charles_henry",
-        "name": "Charles / Henry",
-        "email": ""
-    },
-    {
-        "id": "tr_charles_s",
-        "name": "Charles S.",
-        "email": ""
-    },
-    {
-        "id": "tr_charles_s_henryk_bisera",
-        "name": "Charles S. / Henryk Bisera",
-        "email": ""
-    },
-    {
-        "id": "tr_chelsea",
-        "name": "Chelsea",
-        "email": ""
-    },
-    {
-        "id": "tr_chelsea_eli_dodie",
-        "name": "Chelsea / Eli / Dodie",
-        "email": ""
-    },
-    {
-        "id": "tr_chelsea_m",
-        "name": "Chelsea M.",
-        "email": ""
-    },
-    {
-        "id": "tr_dexter_f",
-        "name": "Dexter F.",
-        "email": ""
-    },
-    {
-        "id": "tr_dexter_f_jofel_v",
-        "name": "Dexter F. / Jofel V.",
-        "email": ""
-    },
-    {
-        "id": "tr_dodie",
-        "name": "Dodie",
-        "email": ""
-    },
-    {
-        "id": "tr_eli_chelsea_stacy",
-        "name": "Eli / Chelsea / Stacy",
-        "email": ""
-    },
-    {
-        "id": "tr_eli_ituriaga_chelsea_m",
-        "name": "Eli Ituriaga / Chelsea M.",
-        "email": ""
-    },
-    {
-        "id": "tr_geraldine",
-        "name": "Geraldine",
-        "email": ""
-    },
-    {
-        "id": "tr_henryk",
-        "name": "Henryk",
-        "email": ""
-    },
-    {
-        "id": "tr_jofel_louie",
-        "name": "Jofel / Louie",
-        "email": ""
-    },
-    {
-        "id": "tr_jofel_valencia",
-        "name": "Jofel Valencia",
-        "email": ""
-    },
-    {
-        "id": "tr_louie_camille_jofel",
-        "name": "Louie / Camille / Jofel",
-        "email": ""
-    },
-    {
-        "id": "tr_louie_dacca",
-        "name": "Louie Dacca",
-        "email": ""
-    },
-    {
-        "id": "tr_louie_dacca_geraldine",
-        "name": "Louie Dacca / Geraldine",
-        "email": ""
-    },
-    {
-        "id": "tr_zachary",
-        "name": "Zachary",
-        "email": ""
-    },
-    {
-        "id": "tr_zachary_louie",
-        "name": "Zachary / Louie",
-        "email": ""
-    },
-    {
-        "id": "tr_zachary_nino",
-        "name": "Zachary / Nino",
-        "email": ""
-    }
-],
+  trainers: [],
   holidays: [],          // one-off closures: storms, suspensions, in-service days
   rentals: [],           // facility sessions, separate from enrollments
   audit: [],             // local action trail — convenience, not legal evidence
@@ -1490,11 +1381,63 @@ var DEFAULTS = {
     org:'Cordillera School of Digital Arts, Inc.',
     orgsub:'Baguio City, Benguet, Philippines',
     addr:'3rd Level, 237 Avenue by GAV Bldg., Upper Bonifacio St., Baguio City, Philippines, 2600',
-    tel:'', mobile:'', email:'', skipHolidays:true, rseq:1,
+    tel:'', mobile:'', email:'', skipHolidays:true, rseq:1, capacityLimit:40,
+    signatories:{
+      registrar:{name:'',title:'Registrar'}, academic:{name:'',title:'Academic Head'},
+      finance:{name:'',title:'Finance Officer'}, admin:{name:'',title:'Administrator'}
+    },
     seq:1 }
 };
 
 var DB;
+/* Academic identity is permanent once allocated. Sequence state is maintained per
+   calendar year and reconciled against imported/history records before allocation. */
+function academicRecordYear(record){
+  var raw=(record&&((record.date||record.savedAt)||''))||new Date().toISOString().slice(0,10),d=new Date(String(raw).slice(0,10)+'T00:00:00');
+  return isFinite(d.getTime())?d.getFullYear():2026;
+}
+function allocateStudentNumber(record){
+  if(record.student_id)return record.student_id;
+  if(!DB.cfg)DB.cfg={};if(!DB.cfg.studentSeqByYear)DB.cfg.studentSeqByYear={};
+  var year=academicRecordYear(record),max=+DB.cfg.studentSeqByYear[year]||0,re=new RegExp('^CSDA-'+year+'-(\\d{5})$');
+  (DB.records||[]).forEach(function(r){var m=String(r.student_id||'').match(re);if(m)max=Math.max(max,+m[1]||0);});
+  max++;DB.cfg.studentSeqByYear[year]=max;record.student_id='CSDA-'+year+'-'+String(max).padStart(5,'0');return record.student_id;
+}
+function defaultIllustrationAssessment(){return{
+  assessor:'Louie B. Dacca',assessment_date:'',assessment_title:'Illustration Competency Assessment',
+  skill_output:{form_structure_perspective:0,visual_design_composition:0,color_lighting_texture:0},
+  performance:{compliance_requirements:0,proper_tool_software_use:0,workflow_time_management:0,problem_solving_adaptability:0,professionalism_discipline:0},
+  knowledge:{fundamental_principles:0,techniques_terminology:0,reference_analysis:0,critical_thinking:0,artistic_justification:0},
+  remarks:'',verified_by:'Authorized Representative'
+};}
+function initializeAcademicSchema(record){
+  if(!record.student)record.student={};
+  var es=String(record.enrollmentStatus||record.student.status||'active').toLowerCase();
+  record.student.status=es==='dropped'?'dropout':es==='cancelled'?'cancelled':'active';
+  if(!record.academic||typeof record.academic!=='object')record.academic={};
+  if(!Array.isArray(record.academic.enrolled_tracks))record.academic.enrolled_tracks=[];
+  record.academic.enrolled_tracks=record.academic.enrolled_tracks.map(function(t){return{
+    course_id:String(t.course_id||''),course_code:String(t.course_code||''),course_title:String(t.course_title||''),hours:Math.max(0,+t.hours||0),
+    grade:String(t.grade||''),eval_date:t.eval_date?String(t.eval_date):null,instructor:String(t.instructor||''),grade_status:String(t.grade_status||'pending_controller')
+  };});
+  /* Enrollment courses seed the ledger immediately. Existing ledger rows are preserved;
+     the unfinished institutional grading controller remains the only authority allowed
+     to populate final grades and GPA. */
+  (record.courses||[]).forEach(function(id){var it=(DB.items||[]).filter(function(x){return x.id===id;})[0];if(!it)return;var exists=record.academic.enrolled_tracks.some(function(t){return t.course_id===id||(!t.course_id&&t.course_code&&t.course_code===String(it.code||''));});if(!exists)record.academic.enrolled_tracks.push({course_id:id,course_code:String(it.code||''),course_title:String(it.n||''),hours:Math.max(0,+it.hrs||0),grade:'',eval_date:null,instructor:String((record.trainer||{}).name||''),grade_status:'pending_controller'});});
+  record.academic.grading_controller_status='pending_finalization';
+  record.academic.gpa_status='pending_grading_controller';
+  if(!Array.isArray(record.academic.change_history))record.academic.change_history=[];
+  if(!isFinite(+record.academic.gpa_computed))record.academic.gpa_computed=0;
+  if(!isFinite(+record.academic.total_hours_completed))record.academic.total_hours_completed=0;
+  var idef=defaultIllustrationAssessment(),ia=record.academic.illustration_assessment;
+  if(!ia||typeof ia!=='object')ia=record.academic.illustration_assessment=idef;
+  ['assessor','assessment_date','assessment_title','remarks','verified_by'].forEach(function(k){if(ia[k]==null)ia[k]=idef[k];});
+  ['skill_output','performance','knowledge'].forEach(function(group){if(!ia[group]||typeof ia[group]!=='object')ia[group]={};Object.keys(idef[group]).forEach(function(k){var v=+ia[group][k];ia[group][k]=isFinite(v)?Math.max(0,Math.min(100,v)):0;});});
+  if(!record.gates||typeof record.gates!=='object')record.gates={};
+  ['fees','portfolio','report','approved'].forEach(function(k){record.gates[k]=record.gates[k]===true;});
+  if(!record.timeline_state)record.timeline_state='scheduled';
+  allocateStudentNumber(record);return record;
+}
 /* older saves predate trainers and the contact fields */
 function trainerSlug(name){return 'tr_'+String(name||'trainer').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');}
 function migrateIndividualTrainers(){
@@ -1514,13 +1457,31 @@ function migrateDB(){
     DB.units = JSON.parse(JSON.stringify(DEFAULTS.units));
   }
   if (DB.cfg && !DB.cfg.rseq) DB.cfg.rseq = 1;
+  if (DB.cfg && !DB.cfg.capacityLimit) DB.cfg.capacityLimit = 40;
   if (!DB.pay) DB.pay = JSON.parse(JSON.stringify(DEFAULTS.pay));
   if (!DB.pay.bank) DB.pay.bank = { name:'', acctName:'', acctNo:'', branch:'', swift:'' };
   if (!DB.pay.gcash) DB.pay.gcash = { name:'', number:'', qrText:'', qrImg:'' };
   if (DB.cfg && DB.cfg.skipHolidays == null) DB.cfg.skipHolidays = true;
   if (!DB.cfg) DB.cfg = JSON.parse(JSON.stringify(DEFAULTS.cfg));
   ['tel','mobile','email'].forEach(function(k){if(DB.cfg[k]==null)DB.cfg[k]='';});
+  if(!DB.cfg.signatories)DB.cfg.signatories=JSON.parse(JSON.stringify(DEFAULTS.cfg.signatories));
+  Object.keys(DEFAULTS.cfg.signatories).forEach(function(k){DB.cfg.signatories[k]=Object.assign({},DEFAULTS.cfg.signatories[k],DB.cfg.signatories[k]||{});});
   migrateIndividualTrainers();
+  /* Requested fresh start: remove every trainer profile and every historical/current
+     assignment once on upgrade. The pre-change checkpoint preserves the prior data. */
+  if (!DB.cfg.trainerReset20261021) {
+    DB.trainers=[];
+    (DB.items||[]).forEach(function(it){it.trainer='';it.trainers=[];});
+    (DB.records||[]).forEach(function(r){
+      r.trainer={id:'',name:'',email:''};r.trainerAssignments=[];r.courseTrainers={};
+      if(r.sched)r.sched.trainerIds=[];
+      if(r.certification){r.certification.trainer={};r.certification.documentRevisions=[];r.certification.finalized=false;}
+    });
+    DB.cfg.trainerReset20261021=true;
+    store.set('csda_db',JSON.stringify(DB));
+  }
+  var academicMigrationNeeded=DB.cfg.academicSchemaVersion!==2;
+  if(academicMigrationNeeded)(DB.records||[]).slice().sort(function(a,b){return String(a.date||a.savedAt||'').localeCompare(String(b.date||b.savedAt||''));}).forEach(initializeAcademicSchema);
   (DB.records || []).forEach(function(r){
     if (!r.trainer) r.trainer = { id:'', name:'', email:'' };
     if (r.sched && r.sched.end == null) r.sched.end = '';
@@ -1530,7 +1491,9 @@ function migrateDB(){
                                   money:false, signed:false, signedAt:'' };
     if (!r.agree) r.agree = { privacy:false, privacyAt:'', terms:false, termsAt:'' };
     if (r.baseline === undefined) r.baseline = null;
+    initializeAcademicSchema(r);
   });
+  if(academicMigrationNeeded){DB.cfg.academicSchemaVersion=2;store.set('csda_db',JSON.stringify(DB));}
 
   /* The approved Shared Service Facility individual workstation rate is fixed at
      ₱80 per hour. Existing closed/active rental sessions retain their recorded rate;
@@ -1605,10 +1568,12 @@ function load(){
 var clientCache={revision:0,visibleRevision:-1,visibleItems:[]};
 function invalidateClientCache(){clientCache.revision++;clientCache.visibleRevision=-1;}
 function save(){
+  if(typeof markSaveState==='function')markSaveState('saving');
   invalidateClientCache();
   store.set('csda_db', JSON.stringify(DB));
   var changes = parseInt(store.get('csda_backup_changes') || '0', 10) || 0;
   store.set('csda_backup_changes', String(changes + 1));
+  if(typeof markSaveState==='function')setTimeout(function(){markSaveState('saved');},120);
 }
 function backupStatus(){
   var at = store.get('csda_backup_at') || '';

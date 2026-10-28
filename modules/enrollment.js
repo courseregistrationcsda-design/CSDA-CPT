@@ -43,9 +43,13 @@ function blankEnroll(pre){
     plan: (pre && pre.plan) ? pre.plan : (DB.plans[0]||{}).id,
     sched:{ start:'', end:'', count:8, tstart: DB.cfg.tstart || '13:00', dur: DB.cfg.dur || 3,
             hrs:0, autoCount:true, sat:false, askSat:false, skips:[], dates:[], times:[] },
+    tesdaPathway:'standard',tesdaPathwayAt:'',tesdaPathwayBy:'',
     notes:''
   };
 }
+function tesdaSelected(){return E&&(E.courses||[]).length>0&&(E.courses||[]).every(function(id){var it=itemById(id);return it&&it.c==='tesda';});}
+function tesdaSpecialPathway(){return tesdaSelected()&&(E.tesdaPathway==='pooling'||E.tesdaPathway==='scholarship');}
+function quoteEnrollment(planId){var r=quote(E.courses,E.promos,planId||E.plan),path=tesdaSelected()?(E.tesdaPathway||'standard'):'standard';r.tesdaPathway=path;r.catalogueNet=r.net;if(path==='scholarship'){r.scholarshipWaiver=r.net;r.disc=r.sub;r.net=0;r.lateNet=0;r.lateAdd=0;r.schedule=[];r.applied=[{label:'TESDA Scholarship — 100% fee waiver',pct:100,amt:r.sub}];}else if(path==='pooling'){r.deferredAmount=r.net;r.dueNow=0;r.lateNet=r.net;r.lateAdd=0;r.schedule=[];r.applied=[];}return r;}
 /* Total contact hours across the chosen courses — the quantity that stays fixed
    when the rep changes how long each session runs. */
 /* "4 months · 17 weeks" for a booked date range */
@@ -433,6 +437,7 @@ function enrollTabState(tab){
   if (tab === 'courses')  return E.courses.length ? '' : 'todo';
   if (tab === 'schedule') {
     if (!E.courses.length) return '';
+    if (tesdaSpecialPathway()) return '';
     if ((E.courses||[]).some(function(id){return !(E.courseTrainers||{})[id];})) return 'todo';
     if (!E.trainer || !String(E.trainer.name||'').trim()) return 'todo';
     if (isDateRange(E.courses)) {
@@ -443,7 +448,7 @@ function enrollTabState(tab){
     var bad = (E.sched.dates || []).filter(function(d){ return isBlockedDay(d, E.sched.sat, E.sched.skips); }).length;
     return bad ? 'warn' : '';
   }
-  if (tab === 'payment')  return E.plan ? '' : 'todo';
+  if (tab === 'payment')  return tesdaSpecialPathway() ? '' : (E.plan ? '' : 'todo');
   if (tab === 'legal')    return agreementsComplete() ? '' : 'todo';
   return '';
 }
@@ -497,7 +502,7 @@ function renderEnroll(){
   var b = document.getElementById('eBody');
   if (eStep === 2) { b.innerHTML = enrollPreview(); return; }
   ensureDates();
-  var r = quote(E.courses, E.promos, E.plan);
+  var r = quoteEnrollment();
   var sd = E.sched;                       // needed by both the Schedule and Payment tabs
   var tabIx = ENROLL_TABS.map(function(t){ return t[0]; }).indexOf(eTab);
   var h = '<div class="enrollmeter" role="progressbar" aria-label="Enrollment progress" aria-valuemin="1" ' +
@@ -551,12 +556,18 @@ function renderEnroll(){
   /* ---------- courses ---------- */
   if (eTab === 'courses') {
   h += '<div class="ms"><div class="msh">Courses '+(r.n?'&middot; '+r.n+' selected':'')+'</div>';
+  if(tesdaSelected()){
+    h+='<div class="note a" style="margin-top:0"><b>TESDA enrollment pathway</b><div class="dcopts" style="margin-top:10px">'+[
+      ['standard','Standard Paid','Schedule and payment required'],['pooling','Pooling','Schedule and fees deferred until cohort placement'],['scholarship','Scholarship','All fees waived; schedule deferred']
+    ].map(function(x){var on=(E.tesdaPathway||'standard')===x[0];return '<button type="button" class="ck'+(on?' on':'')+'" data-epath="'+x[0]+'" aria-pressed="'+on+'"><span class="cbox">&#10003;</span><span class="ckt"><b>'+x[1]+'</b><small>'+x[2]+'</small></span></button>';}).join('')+'</div></div>';
+    if(tesdaSpecialPathway())h+='<div class="okbox"><b>'+esc(E.tesdaPathway==='scholarship'?'SCHOLARSHIP — FEES FULLY WAIVED':'POOLING — FEES AND SCHEDULE DEFERRED')+'</b><br>The selected TESDA course is locked to this application. Agreements and Review &amp; Generate remain required.</div>';
+  }
 
   /* A native <select> grouped by category: one tap on a phone, type-ahead on a
      keyboard, and read correctly by screen readers — which a 22-row checkbox
      list was not. Chosen courses become removable chips above it. */
   var picked = E.courses.map(itemById).filter(Boolean);
-  h += '<div class="pickwrap">';
+  h += '<div class="pickwrap"'+(tesdaSpecialPathway()?' aria-disabled="true" style="opacity:.48;pointer-events:none"':'')+'>';
   if (picked.length) {
     h += '<div class="pickchips">' + picked.map(function(i){
       return '<span class="pickchip"><span class="pcn2">'+esc(i.n)+'</span>' +
@@ -609,7 +620,7 @@ function renderEnroll(){
   h += '</div>';
 
   /* ---------- discounts ---------- */
-  h += '<div class="ms"><div class="msh">Discounts</div><div class="dcopts">';
+  h += '<div class="ms"'+(tesdaSpecialPathway()?' aria-disabled="true" style="opacity:.48;pointer-events:none"':'')+'><div class="msh">Discounts</div><div class="dcopts">';
   DB.promos.forEach(function(p){
     if (p.kind === 'bundle') {
       var ok = !r.restrictedShort && r.n >= (p.min||3);
@@ -645,6 +656,9 @@ function renderEnroll(){
 
   /* ---------- schedule ---------- */
   if (eTab === 'schedule') {
+  if(tesdaSpecialPathway()){
+    h+='<div class="ms" aria-disabled="true" style="opacity:.72"><div class="msh">Schedule deferred</div><div class="okbox"><b>'+(E.tesdaPathway==='scholarship'?'TESDA scholarship placement':'TESDA pooling applicant')+'</b><br>No trainer, session dates, or workstation reservation is required now. CSDA will assign these after cohort placement.</div></div>';
+  }else{
   /* ---------- Delivery Team: trainer assignment belongs with schedule planning ---------- */
   h += '<div class="ms"><div class="msh">Delivery Team</div><div class="note" style="margin-top:0">Assign the people delivering this schedule. The primary trainer becomes the automatic Completion Audit signatory.</div></div>';
   var ct = courseTrainer(E.courses);
@@ -818,9 +832,13 @@ function renderEnroll(){
   }   /* end of the session-list branch */
 
   }
+  }
 
   /* ---------- payment plan ---------- */
   if (eTab === 'payment') {
+  if(tesdaSpecialPathway()){
+    h+='<div class="ms" aria-disabled="true" style="opacity:.72"><div class="msh">Payment '+(E.tesdaPathway==='scholarship'?'waived':'deferred')+'</div><div class="okbox"><b>'+(E.tesdaPathway==='scholarship'?'TESDA SCHOLARSHIP — ZERO PAYABLE FEES':'TESDA POOLING — NO PAYMENT DUE NOW')+'</b><br>'+(E.tesdaPathway==='scholarship'?'The scholarship covers the full published fee of '+money(r.sub)+'. No payment plan or transaction is required.':'The indicative published fee is '+money(r.deferredAmount||r.catalogueNet||r.sub)+'. It is not waived and will be assessed only after cohort placement.')+'</div></div>';
+  }else{
   var RC = reconcile(r);
 
   /* what changed, and what that means for the family — only once money is involved */
@@ -937,7 +955,7 @@ function renderEnroll(){
   }
   h += '<div class="ms"><div class="msh">Payment plan</div><div class="plans">';
   DB.plans.forEach(function(pl){
-    var rr = quote(E.courses, E.promos, pl.id);
+    var rr = quoteEnrollment(pl.id);
     var on = E.plan === pl.id;
     h += '<div class="pl'+(on?' on':'')+'" data-eplan="'+pl.id+'"><div class="plh"><div class="plr"></div>' +
       '<div class="pln">'+esc(pl.name)+'</div><div class="plt mono">'+money(rr.net)+'</div></div><div class="plsch">';
@@ -1006,6 +1024,7 @@ function renderEnroll(){
       money(r.net)+' balance to <b>'+money(r.lateNet)+'</b>.</div>';
   }
   h += '</div>';
+  }
 
   /* ---------- admin ---------- */
   h += '<div class="ms"><div class="msh">Administrative</div>' +
@@ -1083,7 +1102,7 @@ function finalizePanel(){
 }
 
 function enrollPreview(){
-  var r = quote(E.courses, E.promos, E.plan);
+  var r = quoteEnrollment();
   return '<div class="enrollmeter" role="progressbar" aria-label="Enrollment complete" aria-valuemin="1" aria-valuemax="6" aria-valuenow="6"><i style="width:100%"></i></div>' +
     '<div class="enprogress"><b>Review complete — ready to finalize</b><span>Final step</span></div>' +
     '<div class="enav" style="flex-wrap:wrap">' +
@@ -1172,6 +1191,8 @@ function buildDoc(r){
     '<div class="pdoc"><span class="badge2">Enrollment Form &amp; Quotation</span><br>' +
     '<b>Ref '+esc(ref)+'</b><br>Date issued: '+esc(prettyDate(E.date))+'<br>' +
     (docCopyFor || 'Client copy') + '</div></div>';
+  if(r.tesdaPathway==='scholarship')h+='<div class="okbox" style="font-size:15px;text-align:center;border:2px solid var(--em)"><b>TESDA SCHOLARSHIP STUDENT</b><br>All course fees are fully waived. Schedule assignment is deferred until scholarship cohort placement.</div>';
+  if(r.tesdaPathway==='pooling')h+='<div class="note a"><b>TESDA POOLING APPLICANT</b><br>Schedule and payment are deferred until cohort placement. Published fees are not waived.</div>';
 
   h += '<h3>Student</h3><dl class="kv">' +
     row('Full name', S.name) + row('Highest educational attainment', S.educ) +
@@ -1200,12 +1221,14 @@ function buildDoc(r){
     h += '<tr class="disrow"><td>Less — '+esc(a.label)+' ('+a.pct+'%)</td>' +
       '<td class="r"></td><td class="r">&minus;'+money(a.amt)+'</td></tr>';
   });
-  h += '<tr class="totrow grandrow"><td>Total payable</td><td class="r"></td>' +
+  h += '<tr class="totrow grandrow"><td>'+(r.tesdaPathway==='pooling'?'Deferred course fee':'Total payable')+'</td><td class="r"></td>' +
        '<td class="r">'+money(r.net)+'</td></tr>';
   h += '</tbody></table>';
 
   var sd = E.sched || { dates:[], times:[] };
-  if (isDateRange(E.courses) && sd.start) {
+  if(tesdaSpecialPathway()){
+    h+='<h3>Schedule status</h3><div class="schedsum"><b>Deferred.</b> No trainer or session dates are assigned. CSDA will contact the applicant after '+(r.tesdaPathway==='scholarship'?'scholarship cohort':'pooling cohort')+' placement.</div>';
+  } else if (isDateRange(E.courses) && sd.start) {
     /* long-form course: print the booked range, not a session grid */
     h += '<h3>Course dates</h3><dl class="kv">' +
       row('Start date', prettyDate(sd.start)) +
@@ -1247,6 +1270,11 @@ function buildDoc(r){
     }
   }
 
+  if(r.tesdaPathway==='pooling'){
+    h+='<h3>Deferred financial status</h3><div class="schedsum"><b>No payment due at enrollment.</b> Indicative published fee: '+money(r.deferredAmount||r.catalogueNet||r.sub)+'. Final fees and payment terms will be issued after cohort placement; this pooling record does not waive fees.</div>';
+  }else if(r.tesdaPathway==='scholarship'){
+    h+='<h3>Scholarship financial status</h3><table><tbody><tr><td>Published course fee</td><td class="r">'+money(r.sub)+'</td></tr><tr><td>TESDA scholarship waiver</td><td class="r">&minus;'+money(r.sub)+'</td></tr><tr class="totrow grandrow"><td>Total payable</td><td class="r amtdue">'+money(0)+'</td></tr></tbody></table>';
+  }else{
   h += '<h3>Payment schedule — '+esc(r.plan.name)+'</h3>' +
     '<table><thead><tr><th>Stage</th><th>Due date</th><th class="r">Share</th>' +
     (r.pct ? '<th class="r">Gross</th><th class="r">Discount</th>' : '') +
@@ -1264,6 +1292,7 @@ function buildDoc(r){
     (r.pct ? '<td class="r">'+money(r.sub)+'</td><td class="r">&minus;'+money(r.disc)+'</td>' : '') +
     '<td class="r amtdue">'+money(r.net)+'</td>' +
     '<td class="r lateamt">'+money(r.lateNet)+'</td></tr></tbody></table>';
+  }
 
   /* A revised form must not contradict the receipts the family already holds. */
   var RCp = reconcile(r);
@@ -1517,6 +1546,8 @@ document.getElementById('eBody').addEventListener('click', function(e){
     E.trainerSave = !E.trainerSave;
     renderEnroll(); return;
   }
+  var pathway=e.target.closest('[data-epath]');
+  if(pathway){syncEnroll();E.tesdaPathway=pathway.getAttribute('data-epath');E.tesdaPathwayAt=new Date().toISOString();E.tesdaPathwayBy=typeof staffName!=='undefined'&&staffName?staffName:'CSDA staff';if(tesdaSpecialPathway()){E.promos={};E.payments=[];E.trainer={id:'',name:'',email:''};E.trainerAssignments=[];E.sched=blankEnroll().sched;}renderEnroll();return;}
   var el = e.target.closest('[data-eact]');
   if (!el) return;
   var act = el.getAttribute('data-eact');
@@ -1589,7 +1620,7 @@ document.getElementById('eBody').addEventListener('click', function(e){
     trackEvent('enrollment_saved');
   }
   else if (act === 'print') {
-    var r = quote(E.courses, E.promos, E.plan);
+    var r = quoteEnrollment();
     document.getElementById('printarea').innerHTML = buildDoc(r);
     printDoc(pdfNameFor(E.student.name, E.courses, E.ref));
   }
@@ -1599,13 +1630,14 @@ document.getElementById('eBody').addEventListener('click', function(e){
       toast('Give the trainer a name before finalising', true);
       return;
     }
+    if(!requireCapacityOverride(E,E.ref||''))return;
     trackEvent('enrollment_finalized');
     /* No trainer yet? Still file it and still produce the PDF — only the trainer
        hand-off is skipped, and the toast says so. */
     if (!E.trainer || (E.trainer.email || '').indexOf('@') < 1) {
       if (!E.ref) E.ref = nextRef();
       saveRecord();
-      var rq = quote(E.courses, E.promos, E.plan);
+      var rq = quoteEnrollment();
       document.getElementById('printarea').innerHTML = buildDoc(rq);
       printDoc(pdfNameFor(E.student.name, E.courses, E.ref));
       toast('Filed and printing — no trainer assigned, so no copy was prepared for one');

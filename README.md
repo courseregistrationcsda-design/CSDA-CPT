@@ -6,6 +6,14 @@ Offline-capable course pricing, quotations, payment schedules, enrollment, admin
 
 The readable application source uses `index.html` plus focused classic-script modules under `modules/`. The production build validates and bundles those modules into a smaller hosted version while preserving an on-demand standalone HTML download.
 
+## Complete documentation
+
+- [`docs/CSDA_VERSION3_COMPLETE_DOCUMENTATION.md`](docs/CSDA_VERSION3_COMPLETE_DOCUMENTATION.md) — comprehensive product, workflow, data, controls, scenarios, troubleshooting, and pre-deployment reference.
+- [`guides/csda-general-administrative-guidelines.html`](guides/csda-general-administrative-guidelines.html) — responsive searchable operating manual.
+- [`guides/csda-general-administrative-guidelines.pdf`](guides/csda-general-administrative-guidelines.pdf) — printable offline edition.
+
+Stage 10 and the final `3.0.0` release remain intentionally held until the grading controller, GPA/final TOR rules, credential re-enablement, and all release-readiness checks are approved.
+
 ## Requirements
 
 - Node.js 20 or later

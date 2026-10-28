@@ -212,7 +212,14 @@ header{position:sticky;top:0;z-index:40;background:var(--glass);
 .btn.pri:hover{filter:brightness(1.08)}
 .btn.dgr{color:var(--rd);border-color:var(--rdr);background:var(--rdb)}
 .btn.dgr:hover{background:var(--rd);color:#fff;border-color:var(--rd)}
-.btn.sm{padding:6px 11px;font-size:11.5px;border-radius:8px}
+.btn.sm{padding:6px 11px;font-size:11.5px;border-radius:10px}
+/* Soft-surface pass shared across the application shell. These selectors preserve the
+   semantic theme tokens while applying the reference's rounded, floating material. */
+:where(.btn,.iconbtn,.finp,.searchbox input){border-radius:13px}
+:where(.dir,.tabs,.ab,.reccard,.analytics-panel,.analytics-kpi,.studentPhotoPane,.aupbox,.legdoc){border-radius:18px;box-shadow:var(--shxs)}
+:where(.modal,.lifedetail,.backup-confirm){filter:drop-shadow(0 24px 38px rgba(8,12,24,.18))}
+:where(.okbox,.note,.alert,.gate-row){border-radius:14px}
+
 .btn.blk{width:100%;justify-content:center}
 .iconbtn{width:34px;height:34px;border-radius:10px;background:var(--card);border:1px solid var(--line);
   color:var(--sec);cursor:pointer;font-size:14px;display:grid;place-items:center;transition:.2s;flex:none}
@@ -268,7 +275,10 @@ main{max-width:1360px;margin:0 auto;padding:clamp(18px,3vw,30px) clamp(14px,3vw,
 .tag.h{background:var(--rdb);color:var(--rd);border-color:var(--rdr)}
 .em{color:var(--em2)}.am{color:var(--am2)}.rd{color:var(--rd)}.sc{color:var(--sec)}
 
-.pcards{display:grid;gap:9px;grid-template-columns:repeat(auto-fit,minmax(min(100%,268px),1fr))}
+.pcards{display:grid;gap:14px;grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:1050px){.pcards{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.pcards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:440px){.pcards{grid-template-columns:1fr}}
 
 /* ---- idle glint ----
    A slow band of light crosses each card and button on a loop, so interactive
@@ -597,6 +607,16 @@ textarea.finp{resize:vertical;min-height:62px;line-height:1.5}
 
 /* admin course blocks */
 .ablocks{display:grid;gap:11px;grid-template-columns:repeat(auto-fit,minmax(min(100%,238px),1fr))}
+.analytics-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin:14px 0}
+.analytics-kpi{padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.analytics-kpi strong{display:block;font-size:28px;line-height:1;color:var(--txt);font-variant-numeric:tabular-nums}
+.analytics-kpi span{display:block;margin-top:7px;color:var(--sec);font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.05em}
+.analytics-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.analytics-panel{padding:16px;border:1px solid var(--line);border-radius:15px;background:var(--card)}
+.analytics-row{display:grid;grid-template-columns:minmax(100px,1fr) 3fr 42px;gap:9px;align-items:center;margin:10px 0;font-size:11px}.analytics-track{height:10px;border-radius:99px;background:var(--bg2);overflow:hidden}.analytics-fill{height:100%;border-radius:inherit;background:var(--em)}
+.analytics-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--sec)}.analytics-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px}
+.analytics-table{width:100%;border-collapse:collapse;font-size:11px}.analytics-table th,.analytics-table td{padding:9px 7px;border-bottom:1px solid var(--line);text-align:left}.analytics-table th{color:var(--sec);font-size:9.5px;text-transform:uppercase;letter-spacing:.05em}
+.backup-confirm-veil{position:fixed;inset:0;z-index:240;background:rgba(7,11,20,.62);backdrop-filter:blur(4px);display:grid;place-items:center;padding:18px}.backup-confirm{width:min(520px,100%);padding:26px;border-radius:20px;background:var(--card);border:1px solid var(--line2);box-shadow:0 30px 90px rgba(0,0,0,.38)}.backup-confirm-icon{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--ok) 16%,var(--card));color:var(--ok);font-size:25px;font-weight:900}.backup-confirm h2{margin:14px 0 7px;font-size:21px}.backup-confirm-summary{margin:15px 0;padding:12px;border-radius:12px;background:var(--bg2);font-size:12px;line-height:1.7}
+@media(max-width:820px){.analytics-grid{grid-template-columns:1fr}.analytics-row{grid-template-columns:minmax(85px,1fr) 2fr 36px}.analytics-scroll{overflow:auto}.analytics-table{min-width:680px}}
 .ab{background:var(--bg2);border:1px solid var(--line);border-radius:13px;padding:14px 16px;
   display:flex;flex-direction:column;gap:9px;transition:.24s;position:relative}
 .ab:hover{border-color:var(--line2);transform:translateY(-2px);box-shadow:var(--sh)}
@@ -611,39 +631,29 @@ textarea.finp{resize:vertical;min-height:62px;line-height:1.5}
 .pcart,.abart{position:relative;overflow:hidden;background:var(--line);border-radius:10px}
 .pcart{aspect-ratio:16/9;margin-bottom:12px}
 .pcart img,.abart img{width:100%;height:100%;display:block;object-fit:cover}
-/* Catalogue covers use the supplied portrait, full-bleed visual language. Contrast is
-   guaranteed by a fixed dark scrim and dense bottom gradient rather than inferred
-   artwork tone, so every image remains readable in both application themes. */
-.pc:not(.ghost){aspect-ratio:2/3;min-height:430px;cursor:default;border-radius:20px}
-.pc:not(.ghost):hover{transform:translateY(-3px)}
+/* Square course tiles use a deterministic abstract artwork system inspired by the
+   supplied geometric reference. Uploaded Admin artwork can still replace any tile. */
+.pc:not(.ghost){aspect-ratio:1/1;min-height:0;cursor:default;border-radius:24px;filter:drop-shadow(0 18px 22px rgba(12,18,35,.16))}
+.pc:not(.ghost):hover{transform:translateY(-4px);filter:drop-shadow(0 24px 28px rgba(12,18,35,.22))}
 .pc:not(.ghost) .pcin{border-radius:inherit}
-.pc:not(.ghost) .pcfront{min-height:100%;padding:0;overflow:hidden;border-radius:20px;
-  background:#151326;border-color:rgba(255,255,255,.12);color:#fff;isolation:isolate}
+.pc:not(.ghost) .pcfront{min-height:100%;padding:0;overflow:hidden;border-radius:24px;background:linear-gradient(145deg,var(--cover-bg),var(--cover-bg2,var(--cover-bg)));border:0;color:var(--cover-text);isolation:isolate}
 .pc:not(.ghost) .pcfront::before{display:none}
-.pccoverart,.pccoverfallback,.pccoverveil{position:absolute!important;inset:0;width:100%;height:100%}
-.pccoverart{object-fit:cover;z-index:-3!important}
-.pccoverfallback{z-index:-3!important;background:linear-gradient(145deg,#7148bc 0%,#3b246d 42%,#171126 100%)}
-.pccoverveil{z-index:-2!important;background:
-  linear-gradient(180deg,rgba(7,8,15,.18) 0%,rgba(7,8,15,.08) 30%,rgba(7,8,15,.55) 58%,rgba(7,8,15,.97) 100%),
-  linear-gradient(90deg,rgba(7,8,15,.42),transparent 72%)}
-.pccovercontent{position:absolute!important;z-index:2!important;inset:auto 0 0;padding:clamp(22px,8%,32px);
-  display:flex;flex-direction:column;align-items:flex-start;text-shadow:0 2px 16px rgba(0,0,0,.58)}
-.pccode{font-size:11px;font-weight:850;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;color:rgba(255,255,255,.9)}
-.pc:not(.ghost) .pcn{font-size:clamp(25px,2.15vw,34px);line-height:1.04;letter-spacing:-.035em;font-weight:850;color:#fff;max-width:12ch}
-.pc:not(.ghost) .pcm{display:flex;gap:8px 14px;flex-wrap:wrap;margin-top:14px;color:rgba(255,255,255,.82);
-  font-size:9px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
-.pc:not(.ghost) .pcm span+span::before{content:'•';margin-right:14px;color:rgba(255,255,255,.55)}
-.pccoverrule{width:100%;height:1px;background:rgba(255,255,255,.32);margin:20px 0 18px}
-.pccoverbottom{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.pc:not(.ghost) .pcr{font-size:clamp(18px,1.5vw,23px);font-weight:850;color:#fff}
-.pclearn{min-height:44px;padding:10px 16px;border:1px solid rgba(255,255,255,.72);border-radius:999px;
-  background:rgba(9,10,18,.42);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;
-  font:inherit;font-size:11px;font-weight:850;letter-spacing:.02em;cursor:pointer;text-shadow:none;
-  transition:background var(--agent-duration-chat) var(--agent-ease-swift),transform var(--agent-duration-chat) var(--agent-ease-swift)}
-.pclearn:hover{background:#fff;color:#161326;transform:translateY(-1px)}
-.pclearn:focus-visible{outline:3px solid #fff;outline-offset:3px}
-@media(max-width:620px){.pc:not(.ghost){min-height:480px;aspect-ratio:3/4}.pc:not(.ghost) .pcn{font-size:30px}}
-@media(prefers-reduced-motion:reduce){.pclearn{transition:none}}
+.pccoverart,.pccoverveil{position:absolute!important;inset:0;width:100%;height:100%}.pccoverart{object-fit:cover;z-index:-3!important}
+.pccoverveil{z-index:-1!important;background:transparent}.custom-cover .pccoverveil{background:linear-gradient(180deg,rgba(7,8,15,.54),rgba(7,8,15,.08) 34%,rgba(7,8,15,.12) 56%,rgba(7,8,15,.88))}
+.pccovercontent{position:absolute!important;z-index:2!important;inset:0;padding:clamp(14px,5.5%,20px);display:flex;flex-direction:column;align-items:stretch;color:var(--cover-text);text-shadow:none}
+.pccoverheading,.pccoverfoot{position:relative;z-index:3;padding:9px 11px;border:1px solid rgba(255,255,255,.22);border-radius:14px;background:rgba(7,11,20,.78);color:#fff;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 8px 22px rgba(9,12,28,.2)}
+.pccoverfoot{margin-top:auto;padding:8px 10px}.pccode{font-size:8.5px;font-weight:850;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;color:rgba(255,255,255,.76)}
+.pc:not(.ghost) .pcn{font-size:clamp(15px,1.22vw,19px);line-height:1.1;letter-spacing:-.014em;font-weight:820;color:#fff;max-width:none;overflow-wrap:anywhere}.pc:not(.ghost) .pcn.title-long{font-size:clamp(13px,1.02vw,16px);line-height:1.08}.pc:not(.ghost) .pcn.title-xlong{font-size:clamp(11.5px,.88vw,14px);line-height:1.06}
+.pcgenerated{position:absolute!important;z-index:0!important;left:22%;top:25%;width:56%;height:43%;overflow:visible;filter:drop-shadow(0 14px 14px rgba(16,10,42,.16));transform:rotate(var(--symbol-rotate));transition:transform 420ms var(--ease-premium)}
+.pc:hover .pcgenerated{transform:rotate(var(--symbol-rotate)) scale(1.035)}
+.pc:not(.ghost) .pcm{display:flex;gap:6px 10px;flex-wrap:wrap;margin-top:0;color:rgba(255,255,255,.76);font-size:8px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.pc:not(.ghost) .pcm span+span::before{content:'•';margin-right:10px;color:rgba(255,255,255,.55)}
+.pccoverrule{width:100%;height:1px;background:rgba(255,255,255,.25);margin:7px 0 8px}
+.pccoverbottom{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px}.pc:not(.ghost) .pcr{font-size:clamp(14px,1.12vw,18px);font-weight:850;color:#fff}
+.pclearn{min-height:34px;padding:7px 11px;border:1px solid rgba(255,255,255,.68);border-radius:999px;background:rgba(255,255,255,.1);color:#fff;font:inherit;font-size:9.5px;font-weight:850;cursor:pointer;text-shadow:none;transition:background var(--agent-duration-chat) var(--agent-ease-swift),transform var(--agent-duration-chat) var(--agent-ease-swift)}
+.pclearn:hover{background:#fff;color:#111827;transform:translateY(-1px)}.pclearn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+@media(max-width:620px){.pc:not(.ghost){aspect-ratio:1/1}.pc:not(.ghost) .pcn{font-size:18px}.pc:not(.ghost) .pcn.title-long{font-size:15px}.pc:not(.ghost) .pcn.title-xlong{font-size:13px}.pcgenerated{top:24%;height:44%}}
+@media(prefers-reduced-motion:reduce){.pclearn,.pcgenerated{transition:none}}
 /* Focused artwork is full-bleed. The stored luminance chooses a strong light or dark
    readability veil; the gradient is deliberately opaque enough for mixed artwork. */
 .pcback.hasart{isolation:isolate;color:var(--art-text);background:var(--art-bg);display:flex!important;
@@ -669,7 +679,7 @@ textarea.finp{resize:vertical;min-height:62px;line-height:1.5}
 .ab.hid:hover .abart img,.ab.hid:focus-within .abart img{filter:none;opacity:1}
 .abartflag{position:absolute;left:8px;top:8px;padding:4px 8px;border-radius:999px;background:rgba(7,11,20,.78);color:#fff;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
 .arteditor{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:14px;align-items:start}
-.artstage{position:relative;aspect-ratio:2/3;max-height:560px;background:#111;border:1px solid var(--line2);border-radius:12px;overflow:hidden;cursor:grab;touch-action:none}
+.artstage{position:relative;aspect-ratio:1/1;max-height:560px;background:#111;border:1px solid var(--line2);border-radius:12px;overflow:hidden;cursor:grab;touch-action:none}
 .artstage:active{cursor:grabbing}.artstage canvas{width:100%;height:100%;display:block}
 .arttools{display:flex;flex-direction:column;gap:9px}.arttools .btn{width:100%}.artmove{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.artmove .btn{padding:8px 4px}
 .artempty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#bbb;font-size:12px;line-height:1.5;padding:20px;pointer-events:none}
@@ -1094,6 +1104,11 @@ tr.st-settled td.amtdue{opacity:1}
 .prev .badge2{display:inline-block;border:1px solid #111;border-radius:4px;padding:2px 7px;
   font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 
+.assessment-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px}
+.print-canvas{box-sizing:border-box;width:210mm;min-height:297mm;padding:20mm;background:#fff;color:#000;font-family:serif;line-height:1.5}
+.tor-layout{display:flex;flex-direction:column;gap:16px}.tor-hdr{text-align:center;border-bottom:2px solid #000;padding-bottom:8px}.tor-hdr h2,.tor-hdr h3,.tor-hdr h4{margin:3px 0}.tor-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;border:1px solid #000;padding:10px;font:12px/1.6 Arial,sans-serif}.tor-table{width:100%;border-collapse:collapse}.tor-table th,.tor-table td{border:1px solid #000;padding:5px;font:10px/1.35 Arial,sans-serif}.tor-table th{background:#f4f4f4;text-transform:uppercase}.tor-section{font-weight:800}.tor-sub{font-weight:800;background:#f8f8f8;text-align:right}.tor-summary,.tor-cert{border:1px solid #000;padding:10px;font:11px/1.5 Arial,sans-serif}.cert-footer{display:flex;justify-content:space-between;gap:20px;text-align:center;margin-top:28px}.cert-footer>div{flex:1;border-top:1px solid #000;padding-top:4px}.cert-footer span{font-size:9px}
+@media(max-width:720px){.tor-meta{grid-template-columns:1fr}.assessment-grid{grid-template-columns:1fr}}
+
 @media print{
   /* `auto` follows whatever paper the printer is loaded with — A4, Letter, Legal, A5.
      Hard-coding A4 made Chrome shrink-or-clip the sheet on US Letter printers. */
@@ -1115,6 +1130,8 @@ tr.st-settled td.amtdue{opacity:1}
 
   #printarea{display:block!important;position:static!important;overflow:visible!important;
     width:auto!important;height:auto!important;max-height:none!important}
+  #printarea .print-canvas{width:auto!important;min-height:0!important;padding:0!important}
+  #printarea .tor-table thead{display:table-header-group}
   #printarea .prev{box-shadow:none;border-radius:0;padding:0;font-size:11px;
     width:auto;max-width:none;overflow:visible}
 
@@ -1648,11 +1665,13 @@ function prettyDate(iso){
 /* ================= DEFAULT CATALOGUE ================= */
 </script>
 <script src="modules/data-store.js"></script>
+<script src="modules/course-curriculum-v3.js"></script>
 <script>
 
 
 </script>
 <script src="modules/domain-rules.js"></script>
+<script src="modules/course-art-matrix.js"></script>
 <script>
 /* ================= SEARCH + FEED ================= */
 var query = '', activeCat = 'all';
@@ -1692,6 +1711,15 @@ function buildDir(){
   document.getElementById('catFilter').onchange=function(){activeCat=this.value;renderFeed();};
 }
 
+function courseVisualHash(s){var h=2166136261;String(s||'course').split('').forEach(function(ch){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);});return h>>>0;}
+function generatedCourseArtwork(it){
+  var h=courseVisualHash((it.id||'')+'|'+(it.code||'')+'|'+(it.n||'')),spec=courseArtSpec(it),rot=(h%9)-4;
+  var rgb=function(hex){hex=String(hex).replace('#','');return [parseInt(hex.slice(0,2),16),parseInt(hex.slice(2,4),16),parseInt(hex.slice(4,6),16)];},c=rgb(spec.from),l=(c[0]*.299+c[1]*.587+c[2]*.114),text=l>164?'#172033':'#ffffff',soft=l>164?'rgba(23,32,51,.68)':'rgba(255,255,255,.76)';
+  var icon=courseArtIcon(spec.icon,spec.accent,h);
+  var svg=typeof creativeCourseArtwork==='function'?creativeCourseArtwork(it,spec,h,icon):'';
+  if(!svg)svg='<svg class="pcgenerated" viewBox="0 0 100 100" aria-hidden="true" style="--symbol-rotate:'+rot+'deg"><g class="pcicon">'+icon+'</g></svg>';
+  return {html:svg,style:'--cover-bg:'+spec.from+';--cover-bg2:'+spec.to+';--cover-text:'+text+';--cover-soft:'+soft+';--cover-accent:'+spec.accent, family:spec.family};
+}
 function renderFeed(){
   /* every render rebuilds the cards, so nothing can stay flipped across a search */
   var shown_ix = -1;                       // staggers the idle glint across the grid
@@ -1715,26 +1743,28 @@ function renderFeed(){
       var nLes = (it.modules||[]).reduce(function(s,m){ return s + (m.lessons||[]).length; }, 0);
       var mlist = (it.modules || []).filter(function(m){ return m && (m.name || (m.lessons||[]).length); });
       var assigned = it.trainer ? trainerById(it.trainer) : null;
+      var generated=generatedCourseArtwork(it),customArt=it.artMode==='custom'&&(it.artFull||it.art);
       shown_ix++;
       html += '<div class="pc" data-item="'+it.id+'" tabindex="-1" ' +
-        'style="--gd:'+((shown_ix % 9) * 0.55).toFixed(2)+'s">' +
-        '<div class="pcin"><div class="pcface pcfront hasart art-'+(it.artTone||'dark')+'">' +
-        ((it.artFull||it.art) ? '<img class="pccoverart" src="'+esc(it.artFull||it.art)+'" alt="" loading="lazy">' : '<div class="pccoverfallback" aria-hidden="true"></div>') +
+        'style="--gd:'+((shown_ix % 9) * 0.55).toFixed(2)+'s;'+(customArt?'--cover-bg:#151326;--cover-bg2:#151326;--cover-text:#fff;--cover-soft:rgba(255,255,255,.74)':generated.style)+'">' +
+        '<div class="pcin"><div class="pcface pcfront '+(customArt?'hasart custom-cover':'generated-cover')+'">' +
+        (customArt ? '<img class="pccoverart" src="'+esc(it.artFull||it.art)+'" alt="" loading="lazy">' : generated.html) +
         '<div class="pccoverveil" aria-hidden="true"></div><div class="pccovercontent">' +
-        (it.code ? '<div class="pccode">'+esc(it.code)+'</div>' : '') +
-        '<div class="pcn">'+hi(it.n, tk)+'</div>' +
-        '<div class="pcm">' + (it.hrs ? '<span>'+it.hrs+' HRS</span>' : '') +
+        '<div class="pccoverheading">'+(it.code ? '<div class="pccode">'+esc(it.code)+'</div>' : '') +
+        '<div class="pcn '+(it.n.length>36?'title-xlong':it.n.length>22?'title-long':'')+'">'+hi(it.n, tk)+'</div></div>' +
+        '<div class="pccoverfoot"><div class="pcm">' + (it.hrs ? '<span>'+it.hrs+' HRS</span>' : '') +
           (it.sess ? '<span>'+it.sess+' SESSIONS</span>' : '') + '</div>' +
         '<div class="pccoverrule"></div><div class="pccoverbottom">' +
         '<div class="pcr mono">'+(it.price!=null?money(it.price):'&mdash;')+'</div>' +
         '<button class="pclearn" data-open-course="'+it.id+'" aria-expanded="false" aria-label="Learn more about '+esc(it.n)+'">Learn More</button>' +
-        '</div></div></div>' +
+        '</div></div></div></div>' +
 
         /* ---- reverse: what the course actually covers ---- */
         '<div class="pcface pcback'+((it.artFull||it.art)?' hasart art-'+(it.artTone||'dark'):'')+'" role="dialog" aria-modal="true" aria-label="'+esc(it.n)+' course outline" tabindex="-1">' +
           ((it.artFull||it.art) ? '<img class="pbbackfill" src="'+esc(it.artFull||it.art)+'" alt=""><img class="pbbackart" src="'+esc(it.artFull||it.art)+'" alt="">' : '') +
           '<div class="pbh"><span class="pbt">'+esc(it.n)+'</span>' +
             '<button class="pbx" data-flipback aria-label="Back to the summary">&#8634;</button></div>' +
+          ((it.leadFaculty||it.delivery) ? '<div class="pbd sc" style="font-size:11.5px">'+(it.leadFaculty?'<b>Lead Faculty:</b> '+esc(it.leadFaculty):'')+(it.leadFaculty&&it.delivery?' · ':'')+(it.delivery?'<b>Format:</b> '+esc(it.delivery):'')+'</div>' : '') +
           (it.desc ? '<div class="pbd">'+esc(it.desc)+'</div>'
                    : '<div class="pbd sc">No description recorded for this course yet.</div>') +
           (mlist.length
@@ -1745,6 +1775,8 @@ function renderFeed(){
                     : '');
               }).join('') + '</div>'
             : '<div class="pbl sc" style="font-size:11.5px">No modules listed yet.</div>') +
+          ([['Learning outcomes',it.learningOutcomes],['Prerequisites',it.prerequisites],['Required software',it.requiredSoftware],['Required materials',it.requiredMaterials],['Assessment methods',it.assessmentMethods]].filter(function(x){return(x[1]||[]).length;}).map(function(x){return '<div class="pbl"><div class="pblm">'+esc(x[0])+'</div><ul class="pbll">'+x[1].map(function(v){return '<li>'+esc(v)+'</li>';}).join('')+'</ul></div>';}).join(''))+
+          (it.credentialOutcome?'<div class="pbd"><b>Certificate / competency outcome:</b> '+esc(it.credentialOutcome)+'</div>':'')+
           '<div class="pbfoot"><button class="btn pri sm pbgo" data-details="'+it.id+'">' +
             'Proceed to details &rsaquo;</button></div>' +
         '</div></div></div>';
@@ -1799,7 +1831,7 @@ function unlockPage(){
 function trainerHandoff(){
   var tr = E.trainer || {};
   if (!tr.email) { toast('No trainer assigned — pick one on the form first', true); return; }
-  var r = quote(E.courses, E.promos, E.plan);
+  var r = quoteEnrollment();
   var names = E.courses.map(function(id){ var i = itemById(id); return i ? i.n : id; }).join(', ');
   var sd = E.sched || {};
   var when = isDateRange(E.courses)
@@ -1962,7 +1994,7 @@ window.addEventListener('beforeprint', function(){
   var pa = document.getElementById('printarea');
   if (pa && !pa.innerHTML.trim() && openKind === 'enroll' && E) {
     try {
-      pa.innerHTML = buildDoc(quote(E.courses, E.promos, E.plan));
+      pa.innerHTML = buildDoc(quoteEnrollment());
       document.title = pdfNameFor(E.student.name, E.courses, E.ref);
     } catch(e){}
   }
@@ -2048,6 +2080,7 @@ document.getElementById('cameraUse').onclick=function(){var fn=cameraReceiver,da
 var eTab = 'student';
 var legalTab = 'privacy';
 var recQuery = '';
+var recTesdaFilter = 'all';
 var trEdit = null, trDraft = null;
 var facDate = null;
 var verifyOpen = null, staffName = '';
@@ -2352,9 +2385,8 @@ feed.addEventListener('click', function(e){
 
   if (e.target.closest('[data-flipback]')) { flipCard(card, false); return; }
   if (card.classList.contains('flipped')) return;   // reading the back: leave it alone
-  /* Course details open only from the visible Learn More control. The artwork and
-     surrounding card stay non-interactive, avoiding an oversized hidden action. */
-  if (!e.target.closest('[data-open-course]')) return;
+  /* The whole visible card opens its course details. Learn More remains as the
+     explicit keyboard/screen-reader control, while pointer users may click anywhere. */
   unflipAll(card);
   flipCard(card, true);
 });
@@ -2388,14 +2420,19 @@ feed.addEventListener('keydown', function(e){
 
 /* ================= ADMIN ================= */
 var workFilters={q:'',status:'',payment:'',clearance:'',refund:'',from:'',to:'',showArchived:false};
+/* TEMPORARY DEVELOPMENT OVERRIDE — must be false before deployment. */
+var ADMIN_CREDENTIALS_DISABLED=true;
 var authed=false,aTab='dashboard',editId=null,draft=null,impMode='update',courseInspectId=null,courseEditorAnimate=false,courseEditorScroll=0,recoveryReveal='',recoveryMode=false;
+var analyticsFilters={from:'',to:'',preset:'all',fiscalStart:1};
 document.getElementById('adminBtn').onclick = function(){
+  if(ADMIN_CREDENTIALS_DISABLED){authed=true;if(!staffName)staffName='Temporary Admin';}
   lockPage(); scrim.classList.add('on'); admin.classList.add('on'); openKind = 'admin'; renderAdmin();
 };
 
 function blankCourse(){
   return { id:'', c:(DB.cats[0]||{}).id, n:'', hrs:null, sess:null, price:null, unit:'', note:'',
-    desc:'', dur:(DB.cfg.dur || 3), nofull:false,
+    desc:'', dur:(DB.cfg.dur || 3), nofull:false,leadFaculty:'',delivery:'',
+    learningOutcomes:[],prerequisites:[],requiredSoftware:[],requiredMaterials:[],assessmentMethods:[],credentialOutcome:'',curriculumStatus:'draft',
     kw:'',tlab:'',titles:[],bundleable:true,hidden:false,modules:[],trainers:[] };
 }
 function syncDraft(){
@@ -2407,7 +2444,9 @@ function syncDraft(){
   draft.n = g('f_n').trim(); draft.c = g('f_c');
   draft.price = num('f_price'); draft.hrs = num('f_hrs'); draft.sess = num('f_sess');
   draft.unit = g('f_unit').trim(); draft.note = g('f_note').trim();
-  draft.desc = g('f_desc').trim();
+  draft.desc = g('f_desc').trim(); draft.leadFaculty=g('f_leadFaculty').trim(); draft.delivery=g('f_delivery').trim();
+  var lines=function(id){return g(id).split(/\n/).map(function(x){return x.trim();}).filter(Boolean);};
+  draft.learningOutcomes=lines('f_learningOutcomes');draft.prerequisites=lines('f_prerequisites');draft.requiredSoftware=lines('f_requiredSoftware');draft.requiredMaterials=lines('f_requiredMaterials');draft.assessmentMethods=lines('f_assessmentMethods');draft.credentialOutcome=g('f_credentialOutcome').trim();draft.curriculumStatus=g('f_curriculumStatus')||'draft';
   var dv = num('f_dur'); draft.dur = (dv == null || !(dv > 0)) ? (DB.cfg.dur || 3) : dv;
   draft.kw = g('f_kw').trim(); draft.tlab = g('f_tlab').trim();
   draft.trainer=g('f_trainer');draft.trainers=draft.trainer?[draft.trainer]:[];
@@ -2483,10 +2522,10 @@ function applyCourseArt(){
       var alpha=px[pi+3]/255,rgb=(px[pi]*.299+px[pi+1]*.587+px[pi+2]*.114);
       total+=rgb*alpha+255*(1-alpha);samples++;
     }
-    draft.art=uri; draft.artFull=fullUri; draft.artTone=(total/Math.max(1,samples))>158?'light':'dark';
-    draft.artTransform={zoom:artEditor.zoom,rotation:rot,x:artEditor.x,y:artEditor.y,aspect:'2:3'};
+    draft.art=uri; draft.artFull=fullUri; draft.artTone=(total/Math.max(1,samples))>158?'light':'dark'; draft.artMode='custom';
+    draft.artTransform={zoom:artEditor.zoom,rotation:rot,x:artEditor.x,y:artEditor.y,aspect:'1:1'};
   } catch(e){ toast('Could not process that artwork on this device',true); return; }
-  toast('Artwork applied at original quality with a lossless portrait cover — save the course to keep it'); renderAdmin();
+  toast('Artwork applied at original quality with a lossless square cover — save the course to keep it'); renderAdmin();
 }
 function stashAdminIO(){
   var c = document.getElementById('csvio'); if (c) csvBuf = c.value;
@@ -2494,11 +2533,23 @@ function stashAdminIO(){
 }
 
 </script>
+<script src="modules/academic-ledger.js"></script>
 <script src="modules/lifecycle-audit.js"></script>
 <script>
 
 </script>
 <script src="modules/guide-search.js"></script>
+<script src="modules/automation-payroll.js"></script>
+<script src="modules/notification-workflow.js"></script>
+<script src="modules/tesda-followup.js"></script>
+<script src="modules/executive-intelligence.js"></script>
+<script src="modules/institutional-document-center.js"></script>
+<script src="modules/premium-interface.js"></script>
+<script src="modules/creative-course-artworks.js"></script>
+<script src="modules/launch-mode.js"></script>
+<script src="modules/capacity-intelligence.js"></script>
+<script src="modules/enrollment-realignment.js"></script>
+<script src="modules/curriculum-intelligence.js"></script>
 <script src="modules/admin-interface.js"></script>
 <script>
 /* ==========================================================================
@@ -2704,7 +2755,7 @@ function reconcile(r){
 /* the agreed figure is captured once, so "original vs revised" is a record, not a guess */
 function captureBaseline(){
   if (E.baseline) return;
-  var r = quote(E.courses, E.promos, E.plan);
+  var r = quoteEnrollment();
   E.baseline = { net: r.net, at: new Date().toISOString(), courses: E.courses.slice() };
 }
 
@@ -2739,9 +2790,9 @@ function applyCourseChange(){
 /* Freeze the live enrollment into a stored record. Upserts on the reference, so
    re-saving an edited form replaces it rather than making a duplicate. */
 function saveRecord(){
-  adoptTypedTrainer();
+  if(!tesdaSpecialPathway())adoptTypedTrainer();
   captureBaseline();
-  var rr = quote(E.courses, E.promos, E.plan);
+  var rr = quoteEnrollment();
   var rec = {
     ref: E.ref, savedAt: new Date().toISOString(), date: E.date,
     student: JSON.parse(JSON.stringify(E.student)),
@@ -2749,13 +2800,16 @@ function saveRecord(){
     trainer:JSON.parse(JSON.stringify(E.trainer||{id:'',name:'',email:''})),trainerAssignments:JSON.parse(JSON.stringify(E.trainerAssignments||[])),
     courses: E.courses.slice(), courseTrainers:JSON.parse(JSON.stringify(E.courseTrainers||{})), promos: JSON.parse(JSON.stringify(E.promos)),
     plan: E.plan, sched: JSON.parse(JSON.stringify(E.sched)), notes: E.notes,
+    tesdaPathway: rr.tesdaPathway || 'standard', tesdaPathwayAt:E.tesdaPathwayAt||'', tesdaPathwayBy:E.tesdaPathwayBy||'',
+    tesdaFinancialStatus:rr.tesdaPathway==='scholarship'?'waived':rr.tesdaPathway==='pooling'?'deferred':'payable',
     consent: JSON.parse(JSON.stringify(E.consent || {})),
     agree: JSON.parse(JSON.stringify(E.agree || {})),
     minorAtEnrolment: isMinor(),
     payments: JSON.parse(JSON.stringify(E.payments || [])),
     baseline: E.baseline ? JSON.parse(JSON.stringify(E.baseline)) : null,
     totals: { sub: rr.sub, net: rr.net, pct: rr.pct, disc: rr.sub - rr.net,
-              planName: rr.plan.name, promo: rr.best ? rr.best.label : '' },
+              catalogueNet:rr.catalogueNet,deferredAmount:rr.deferredAmount||0,scholarshipWaiver:rr.scholarshipWaiver||0,
+              planName: rr.plan.name, promo: rr.best ? rr.best.label : '',tesdaPathway:rr.tesdaPathway||'standard' },
     schedule: rr.schedule.map(function(s, si){
       return { l:s.l, p:s.p, amt:s.amt,
                due: stageDue(s.w, E.sched.dates || [], E.date, si, rr.schedule.length) };
@@ -2765,7 +2819,7 @@ function saveRecord(){
   var ex = DB.records.findIndex(function(x){ return x.ref === rec.ref; });
   if (ex > -1) {
     var prior=DB.records[ex];
-    ['enrollmentStatus','certificateEligible','seatAllocation','operationalHistory','cancelledSessions','certification','completionAuditChanges'].forEach(function(k){if(prior[k]!==undefined)rec[k]=JSON.parse(JSON.stringify(prior[k]));});
+    ['student_id','timeline_state','academic','gates','enrollmentStatus','certificateEligible','seatAllocation','operationalHistory','cancelledSessions','certification','completionAuditChanges'].forEach(function(k){if(prior[k]!==undefined)rec[k]=JSON.parse(JSON.stringify(prior[k]));});
     /* A manual board position survives ordinary record edits, but a schedule change
        invalidates it and returns the card to automatic lifecycle calculation. */
     if(prior.timelineOverride&&prior.timelineOverride.scheduleKey===lifecycleScheduleKey(rec))rec.timelineOverride=JSON.parse(JSON.stringify(prior.timelineOverride));
@@ -2782,8 +2836,8 @@ function saveRecord(){
       rec.completionAuditChanges.push({at:new Date().toISOString(),by:staffName||'Administrator',note:changes.join('; '),beforeNet:+(prior.totals||{}).net||0,afterNet:+rec.totals.net||0,beforeCourses:(prior.courses||[]).slice(),afterCourses:(rec.courses||[]).slice()});
       logAction('Completion Audit enrollment edit: '+changes.join('; ')+' on '+rec.ref,staffName||'Administrator');auditEditRef=null;
     }
-    DB.records[ex]=rec;
-  } else DB.records.unshift(rec);
+    initializeAcademicSchema(rec);DB.records[ex]=rec;
+  } else {initializeAcademicSchema(rec);DB.records.unshift(rec);}
   save();
   toast((ex > -1 ? 'Record updated — ' : 'Record saved — ') + rec.ref + ' · Admin › Enrollments');
   return rec;
@@ -2799,6 +2853,7 @@ function loadRecord(rc){
   E.courseTrainers = JSON.parse(JSON.stringify(rc.courseTrainers || {}));
   E.promos = JSON.parse(JSON.stringify(rc.promos || {}));
   E.plan = rc.plan; E.notes = rc.notes || '';
+  E.tesdaPathway=rc.tesdaPathway||'standard';E.tesdaPathwayAt=rc.tesdaPathwayAt||'';E.tesdaPathwayBy=rc.tesdaPathwayBy||'';
   E.trainer=JSON.parse(JSON.stringify(rc.trainer||{id:'',name:'',email:''}));E.trainerAssignments=JSON.parse(JSON.stringify(rc.trainerAssignments||[]));
   E.payments = JSON.parse(JSON.stringify(rc.payments || []));
   E.consent = JSON.parse(JSON.stringify(rc.consent || blankEnroll().consent));
@@ -2841,7 +2896,7 @@ function adminData(){
     '</div><div class="field" style="margin-top:12px"><label class="flab" for="backupPw">Administrator password</label><input class="finp" id="backupPw" type="password" autocomplete="current-password" placeholder="Required to encrypt the complete backup"></div>' +
     '<button class="btn pri" data-act="backup-out-csvzip" style="margin-top:9px">&#8595; Download password-protected CSV backup ZIP</button>' +
     '<div class="note" style="font-size:12px">Includes the complete local app database: names, classes, schedules, catalogue additions, artwork, promotions, payments and receipt images, facility data, configuration, lifecycle states, and audit history.</div>' +
-    '<div style="border-top:1px solid var(--line);margin-top:14px;padding-top:14px"><b style="font-size:12px">Import Session ZIP</b>'+(store.get('csda_restore_recommended')==='1'?'<div class="okbox" style="margin-top:8px"><b>Restore recommended.</b><br>The previous guarded removal created a backup before local data was cleared. Select that ZIP below.</div>':'')+'<div class="note" style="font-size:12px">Select one CSDA session ZIP. The app extracts and verifies every table and referenced media file, decrypts the complete session, adapts recognized records to the current version, then previews Replace or Merge.</div><div class="frow" style="margin-top:8px"><div class="field" style="flex:1"><label class="flab" for="restoreBackupPw">Backup password</label><input class="finp" id="restoreBackupPw" type="password" autocomplete="current-password" placeholder="Enter before selecting the ZIP"></div><label class="btn pri" style="cursor:pointer">Import Session ZIP<input type="file" id="secureBackupFile" accept=".zip,application/zip" style="display:none"></label></div>' +
+    '<div style="border-top:1px solid var(--line);margin-top:14px;padding-top:14px"><b style="font-size:12px">Import Session ZIP</b>'+(store.get('csda_restore_recommended')==='1'?'<div class="okbox" style="margin-top:8px"><b>Restore recommended.</b><br>The previous guarded removal created a backup before local data was cleared. Select that ZIP below.</div>':'')+'<div class="note" style="font-size:12px">Select one CSDA session ZIP of any size. The app applies no file-size ceiling; it extracts and verifies every table and referenced media file, decrypts the complete session, adapts recognized records to the current version, then previews Replace or Merge.</div><div class="frow" style="margin-top:8px"><div class="field" style="flex:1"><label class="flab" for="restoreBackupPw">Backup password</label><input class="finp" id="restoreBackupPw" type="password" autocomplete="current-password" placeholder="Enter before selecting the ZIP"></div><label class="btn pri" style="cursor:pointer">Import Session ZIP<input type="file" id="secureBackupFile" accept=".zip,application/zip" style="display:none"></label></div>' +
     (secureBackupPreview?(function(){var x=backupSummary(secureBackupPreview);return '<div class="okbox" style="margin-top:10px"><b>Recognized CSDA session</b><br>'+esc(secureBackupIntegrity||'Encrypted payload authenticated')+'<br>'+x.students+' enrollments · '+x.courses+' courses · '+x.trainers+' trainers · '+x.promos+' promotions<br>Exported '+esc(String(x.exportedAt).replace('T',' ').slice(0,19))+'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn pri" data-act="backup-restore-replace">Replace with this session</button><button class="btn" data-act="backup-restore-merge">Merge into this app</button><button class="btn" data-act="backup-preview-clear">Cancel</button></div></div>';})():'')+'</div></div>';
   return backupCard + usageCard + '<div class="ms"><div class="msh">Trainer CSV</div>' +
     '<div class="note" style="margin-top:0">Download the catalogue as a spreadsheet, hand it to a trainer to fill in ' +
@@ -2901,7 +2956,7 @@ function printRecords(list, label){
   list.forEach(function(rc, i){
     loadRecord(rc);
     html += (i ? '<div class="pagebreak"></div>' : '') +
-            buildDoc(quote(E.courses, E.promos, E.plan));
+            buildDoc(quoteEnrollment());
   });
   E = keep; eStep = keepStep;
   document.getElementById('printarea').innerHTML = html;
@@ -2929,8 +2984,10 @@ document.getElementById('aBody').addEventListener('keydown',function(e){if(e.tar
 document.getElementById('aBody').addEventListener('change', function(e){
   if(e.target.id==='trainerPhotoFile'&&e.target.files&&e.target.files[0]){var tf=e.target.files[0];if(tf.size>5000000){toast('Photo is over 5 MB',true);return;}var frp=new FileReader();frp.onload=function(){var im=new Image();im.onload=function(){var c=document.createElement('canvas'),z=320;c.width=z;c.height=z;var sc=Math.max(z/im.width,z/im.height),w=im.width*sc,h=im.height*sc;c.getContext('2d').drawImage(im,(z-w)/2,(z-h)/2,w,h);trDraft.photo=c.toDataURL('image/webp',.76);renderAdmin();};im.src=String(frp.result||'');};frp.readAsDataURL(tf);return;}
   if (e.target.id === 'secureBackupFile' && e.target.files && e.target.files[0]) {
-    var sf=e.target.files[0]; if(sf.size>50000000){toast('Backup is over 50 MB',true);return;}
-    var sr=new FileReader();sr.onload=async function(){try{var entries=await validateNormalizedZIP(sr.result),rows=parseCSV(entries['database.csv']);secureBackupFileText=(rows[1]||[])[1]||'';secureBackupIntegrity='Verified and extracted '+(Object.keys(entries).length-1)+' files, including all recognized tables and media';var rp=(document.getElementById('restoreBackupPw')||{}).value||'';if(!rp)throw new Error('Enter the backup password before selecting the ZIP');toast('Opening and adapting the complete session…');secureBackupPreview=await decryptFullBackup(secureBackupFileText,rp);renderAdmin();toast('Complete session recognized — preview Replace or Merge');}catch(err){secureBackupFileText='';secureBackupPreview=null;secureBackupIntegrity='';toast('Could not import session ZIP: '+err.message,true);}};sr.readAsArrayBuffer(sf);return;
+    /* Session archives are intentionally unrestricted: complete offline backups may
+       contain original-quality course artwork, receipts, and learner media. Device
+       memory and browser file APIs remain the only practical limits. */
+    var sf=e.target.files[0],sr=new FileReader();sr.onload=async function(){try{var entries=await validateNormalizedZIP(sr.result),rows=parseCSV(entries['database.csv']);secureBackupFileText=(rows[1]||[])[1]||'';secureBackupIntegrity='Verified and extracted '+(Object.keys(entries).length-1)+' files, including all recognized tables and media';var rp=(document.getElementById('restoreBackupPw')||{}).value||'';if(!rp)throw new Error('Enter the backup password before selecting the ZIP');toast('Opening and adapting the complete session…');secureBackupPreview=await decryptFullBackup(secureBackupFileText,rp);renderAdmin();toast('Complete session recognized — preview Replace or Merge');}catch(err){secureBackupFileText='';secureBackupPreview=null;secureBackupIntegrity='';toast('Could not import session ZIP: '+err.message,true);}};sr.readAsArrayBuffer(sf);return;
   }
   if (e.target.id === 'artFile' && e.target.files && e.target.files[0]) {
     var af=e.target.files[0];
@@ -3040,6 +3097,7 @@ function saveCompletionAuditInputs(rc){
   c.portfolio={evidence:pe,by:pb,ok:!!p.ok&&pe===p.evidence&&pb===p.by,at:p.at||''};
   c.trainer={report:tr,grades:tg,attendance:ta,by:tb,ok:!!t.ok&&tr===t.report&&tg===t.grades&&ta===(t.attendance||'Complete')&&tb===t.by,at:t.at||''};
   c.financial={refundAmount:fa,refundReference:fr,refundReason:rreason?rreason.value:(f.refundReason||'Overpayment correction'),refundReceipt:f.refundReceipt||'',refundConfirmed:!!f.refundConfirmed&&fa===(+f.refundAmount||0)&&fr===f.refundReference,refundConfirmedBy:f.refundConfirmedBy||'',refundConfirmedAt:f.refundConfirmedAt||''};
+  syncIllustrationAssessment(rc);
   return c;
 }
 monitorBody.addEventListener('change',function(e){
@@ -3049,6 +3107,7 @@ monitorBody.addEventListener('change',function(e){
   var fr=new FileReader();fr.onload=function(){var c=saveCompletionAuditInputs(rc);c.financial.refundReceipt=String(fr.result||'');c.financial.refundConfirmed=false;save();renderLifecycleMonitor();toast('Refund receipt attached — verify it, then confirm the refund');};fr.readAsDataURL(file);
 });
 monitorBody.addEventListener('click',function(e){
+  var itor=e.target.closest('[data-illustration-tor]');if(itor){var ir=recordByRef(itor.getAttribute('data-illustration-tor'));if(ir){syncIllustrationAssessment(ir);save();printIllustrationTOR(ir);}return;}
   var rcam=e.target.closest('[data-refundcamera]');if(rcam){var rr=recordByRef(rcam.getAttribute('data-refundcamera'));if(!rr)return;openEmbeddedCamera('Capture refund receipt',function(data){var c=ensureCertification(rr);c.financial.refundReceipt=data;c.financial.refundConfirmed=false;save();renderLifecycleMonitor();toast('Refund receipt captured — verify it, then confirm');});return;}
   if(e.target.closest('[data-act="refresh-monitor"]')){renderLifecycleMonitor();return;}
   var an=e.target.closest('[data-auditnav]');if(an){lifecycleDetailRef=an.getAttribute('data-auditnav');renderLifecycleMonitor();return;}var artn=e.target.closest('[data-auditreturn]');if(artn){if(artn.getAttribute('data-auditreturn')==='queue'){lifecycleDetailRef=null;monitorM.classList.remove('on');admin.classList.add('on');openKind='admin';aTab='audits';renderAdmin();}else{lifecycleDetailRef=null;renderLifecycleMonitor();}return;}
@@ -3065,7 +3124,7 @@ monitorBody.addEventListener('click',function(e){
   node=e.target.closest('[data-certprint]');if(node){var cr=recordByRef(node.getAttribute('data-ref'));if(cr&&cr.certification&&cr.certification.finalized)printCertificate(cr,node.getAttribute('data-certprint'));return;}
   node=e.target.closest('[data-auditedit]');if(node){auditEditRef=node.getAttribute('data-auditedit');var er=recordByRef(node.getAttribute('data-auditedit'));if(er){monitorM.classList.remove('on');loadRecord(er);eStep=1;document.getElementById('eKick').textContent='Completion audit edit';document.getElementById('eTitle').textContent='Edit Enrollment — '+E.ref;renderEnroll();enrollM.classList.add('on');openKind='enroll';toast('Save the enrollment, then return to Class Monitor');}return;}
   var card=e.target.closest('[data-lifecard]');if(card){if(suppressLifeClick)return;auditOrigin='monitor';lifecycleDetailRef=card.getAttribute('data-lifecard');renderLifecycleMonitor();return;}
-  var node=e.target.closest('[data-lifestatus]');if(node){var rc=recordByRef(node.getAttribute('data-ref'));if(!rc)return;var next=node.getAttribute('data-lifestatus'),old=rc.enrollmentStatus||'active';rc.enrollmentStatus=next;rc.certificateEligible=next==='active';rc.seatAllocation=next==='active'?'capacity_check_required':'released';var lr=document.getElementById('lifeReason'),ln=document.getElementById('lifeReasonNote'),why=(lr?lr.value:'Data correction')+((ln&&ln.value.trim())?' · '+ln.value.trim():'');if(lr&&lr.value==='Policy exception'&&!(ln&&ln.value.trim())){toast('Explain the policy exception before changing enrollment status',true);return;}recordOperationalChange(rc,'enrollment_status','Changed enrollment status from '+old+' to '+next+' · reason: '+why+'; financial history preserved');save();renderLifecycleMonitor();toast('Enrollment marked '+next);return;}
+  var node=e.target.closest('[data-lifestatus]');if(node){var rc=recordByRef(node.getAttribute('data-ref'));if(!rc)return;var next=node.getAttribute('data-lifestatus'),old=rc.enrollmentStatus||'active';rc.enrollmentStatus=next;rc.certificateEligible=next==='active';rc.seatAllocation=next==='active'?'capacity_check_required':'released';var lr=document.getElementById('lifeReason'),ln=document.getElementById('lifeReasonNote'),why=(lr?lr.value:'Data correction')+((ln&&ln.value.trim())?' · '+ln.value.trim():'');if(lr&&lr.value==='Policy exception'&&!(ln&&ln.value.trim())){toast('Explain the policy exception before changing enrollment status',true);return;}if(old!==next)applyEnrollmentRealignment(rc,old,next,why);recordOperationalChange(rc,'enrollment_status','Changed enrollment status from '+old+' to '+next+' · reason: '+why+'; financial history preserved');save();renderLifecycleMonitor();toast('Enrollment marked '+next);return;}
   node=e.target.closest('[data-lifemove]');if(node){var rc2=recordByRef(node.getAttribute('data-lifemove')),sel=document.getElementById('lifeMoveSelect');if(rc2&&sel){var lr=document.getElementById('lifeReason'),ln=document.getElementById('lifeReasonNote'),why=(lr?lr.value:'Schedule correction')+((ln&&ln.value.trim())?' · '+ln.value.trim():'');if(lr&&lr.value==='Policy exception'&&!(ln&&ln.value.trim())){toast('Explain the policy exception before changing the timeline',true);return;}moveTimelineCard(rc2,sel.value,'accessible control',why);}return;}
   node=e.target.closest('[data-lifeauto]');if(node){var rc3=recordByRef(node.getAttribute('data-lifeauto'));if(rc3){delete rc3.timelineOverride;recordOperationalChange(rc3,'timeline_automatic','Returned timeline to automatic schedule calculation');save();renderLifecycleMonitor();toast('Automatic timeline restored');}return;}
 });
@@ -3073,6 +3132,7 @@ monitorBody.addEventListener('click',function(e){
 document.getElementById('aBody').addEventListener('click', function(e){
   var t;
   var gt=e.target.closest('[data-guidetoggle]');if(gt){guidelineSupplementOpen=!guidelineSupplementOpen;renderAdmin();var gtb=document.querySelector('[data-guidetoggle]');if(gtb)gtb.focus();return;}
+  var an=e.target.closest('[data-analytics]');if(an){var mode=an.getAttribute('data-analytics');if(mode==='csv'){exportAnalyticsCSV();return;}if(mode==='print'){printAnalyticsReport();return;}if(mode==='tesda-csv'){exportTesdaCSV();return;}if(mode==='tesda-print'){printTesdaReport();return;}var preset=document.getElementById('analyticsPreset').value,now=new Date(),y=now.getFullYear(),m=now.getMonth(),start=null,end=new Date(y,m+1,0);analyticsFilters.preset=preset;analyticsFilters.fiscalStart=+document.getElementById('analyticsFiscal').value||1;if(preset==='custom'){analyticsFilters.from=document.getElementById('analyticsFrom').value;analyticsFilters.to=document.getElementById('analyticsTo').value;}else if(preset==='all'){analyticsFilters.from='';analyticsFilters.to='';}else{if(preset==='month'){start=new Date(y,m,1);end=now;}if(preset==='quarter'){var qm=Math.floor(m/3)*3;start=new Date(y,qm,1);end=new Date(y,qm+3,0);}if(preset==='year'){start=new Date(y,0,1);end=new Date(y,11,31);}if(preset==='fiscal'){var fm=analyticsFilters.fiscalStart-1,fy=m<fm?y-1:y;start=new Date(fy,fm,1);end=new Date(fy+1,fm,0);}var iso=function(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};analyticsFilters.from=iso(start);analyticsFilters.to=iso(end);}renderAdmin();return;}
   var vc=e.target.closest('[data-vcamera]');if(vc){var vk=vc.getAttribute('data-vcamera').split(':'),vr=DB.records[+vk[0]],vp=vr&&vr.payments[+vk[1]];if(!vp)return;openEmbeddedCamera('Capture payment receipt',function(data){vp.receipt=data;vp.status='Pending';vp.by='';vp.at='';logAction('Captured receipt image for '+(vp.txn||''),staffName);save();renderAdmin();toast('Receipt captured and attached');});return;}
   var gs=e.target.closest('[data-guidesearch]');if(gs){if(gs.getAttribute('data-guidesearch')==='clear')guideQuery='';else guideQuery=((document.getElementById('guideQuery')||{}).value||'').trim();renderAdmin();var gq=document.getElementById('guideQuery');if(gq){gq.focus();try{gq.setSelectionRange(gq.value.length,gq.value.length);}catch(_){} }return;}
   var wf=e.target.closest('[data-workfilter]');if(wf){var mode=wf.getAttribute('data-workfilter');if(mode==='clear')workFilters={q:'',status:'',payment:'',clearance:'',refund:'',from:'',to:'',showArchived:false};else if(mode==='archived')workFilters.showArchived=!workFilters.showArchived;else{workFilters.q=(document.getElementById('workQ').value||'').trim();workFilters.status=document.getElementById('workStatus').value;workFilters.payment=document.getElementById('workPayment').value;workFilters.clearance=document.getElementById('workClearance').value;workFilters.refund=document.getElementById('workRefund').value;workFilters.from=document.getElementById('workFrom').value;workFilters.to=document.getElementById('workTo').value;}renderAdmin();return;}
@@ -3085,7 +3145,7 @@ document.getElementById('aBody').addEventListener('click', function(e){
   if ((t = e.target.closest('[data-art]'))) {
     var aa=t.getAttribute('data-art');
     if (aa==='apply') { applyCourseArt(); return; }
-    if (aa==='remove') { syncDraft(); if (draft) { delete draft.art; delete draft.artFull; delete draft.artTone; } artEditor=null; renderAdmin(); toast('Artwork removed — save the course to keep this change'); return; }
+    if (aa==='remove') { syncDraft(); if (draft) { delete draft.art; delete draft.artFull; delete draft.artTone; delete draft.artMode; } artEditor=null; renderAdmin(); toast('Artwork removed — save the course to keep this change'); return; }
     if (!artEditor || !artEditor.img) { toast('Choose artwork first',true); return; }
     if (aa==='left') artEditor.x-=24;
     if (aa==='right') artEditor.x+=24;
@@ -3148,7 +3208,7 @@ document.getElementById('aBody').addEventListener('click', function(e){
     if (rp) {
       var keep = E, keepStep = eStep;
       loadRecord(rp);
-      document.getElementById('printarea').innerHTML = buildDoc(quote(E.courses, E.promos, E.plan));
+      document.getElementById('printarea').innerHTML = buildDoc(quoteEnrollment());
       var pname = pdfNameFor((rp.student || {}).name, rp.courses, rp.ref);
       E = keep; eStep = keepStep;
       printDoc(pname);
@@ -3409,15 +3469,19 @@ document.getElementById('aBody').addEventListener('click', function(e){
       DB = o;
       if (!DB.cfg) DB.cfg = JSON.parse(JSON.stringify(DEFAULTS.cfg));
       DB.items.forEach(function(i){ if (!i.modules) i.modules = []; });
+      /* Every imported enrollment passes through the same academic schema migration
+         as live registrations and encrypted Replace/Merge restores. */
+      migrateDB();
       save();
       if (restoredAt) { store.set('csda_backup_at', restoredAt); store.set('csda_backup_changes', '0'); }
       renderAdmin(); buildDir(); renderFeed(); toast('Backup restored');
     } catch(err){ toast('That is not a valid catalogue export', true); }
   }
   else if (act === 'recs-csv') {
-    var ctxt = recordsCSV();
-    toast(download('csda-enrollments.csv', ctxt, 'text/csv;charset=utf-8')
-      ? 'Downloaded csda-enrollments.csv' : 'Download blocked — use the JSON export instead');
+    var shown=(DB.records||[]).filter(function(rc){return recMatches(rc,recQuery)&&recTesdaMatches(rc);});
+    var ctxt = recordsCSV(shown);
+    toast(download('csda-enrollments-filtered.csv', ctxt, 'text/csv;charset=utf-8')
+      ? 'Downloaded '+shown.length+' shown enrollment'+(shown.length===1?'':'s') : 'Download blocked — use the JSON export instead');
   }
   else if (act === 'pdf-all') { printRecords((DB.records || []).slice(), ''); }
   else if (act === 'pdf-filtered') {
@@ -3489,6 +3553,7 @@ document.getElementById('aBody').addEventListener('click', function(e){
     toast('Guidelines accepted \u2014 welcome, ' + who);
   }
   else if (act === 'recq-clear')  { recQuery = ''; renderAdmin(); }
+  else if (act === 'rec-tesda-filter') { recTesdaFilter=el.getAttribute('data-value')||'all'; renderAdmin(); }
   else if (act === 'reset') {
     var keepRecs = DB.records || [];
     DB = JSON.parse(JSON.stringify(DEFAULTS));
@@ -3889,26 +3954,25 @@ function saveBytes(bytes, name, mime){
   setTimeout(function(){ URL.revokeObjectURL(link.href); }, 6000);
 }
 
-/* "Get app": fire the browser's own installer when it is on offer, and in every case
-   hand over a launcher carrying the CSDA icon. */
+/* Get app is a single-purpose install action. It never opens the installation window
+   and never offers logo/launcher downloads. Browsers still own the final native prompt. */
 var gettingApp = false;
 function getApp(){
   if (gettingApp) return;
   gettingApp = true;
   setTimeout(function(){ gettingApp = false; }, 1500);
-
-  if (installEvt) {                       // a true app install beats any shortcut
+  if (isStandalone()) { toast('The CSDA Toolkit is already installed'); return; }
+  if (installEvt) {
     try {
       installEvt.prompt();
       installEvt.userChoice.then(function(res){
         if (res && res.outcome === 'accepted') { retireNudge(); toast('Installed — the CSDA Toolkit is in your app list'); }
-        else { buildLauncher(true); }
-        installEvt = null; renderInstall();
+        installEvt = null;
       });
       return;
-    } catch(e){ /* fall through to the launcher */ }
+    } catch(e){}
   }
-  buildLauncher(true);
+  toast('Installation is not available yet in this browser. Open this page in a browser that supports app installation.',true);
 }
 
 /* writes the .ico (or .png on Linux) plus the shortcut, then reports what to do next */
