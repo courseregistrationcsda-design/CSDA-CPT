@@ -189,3 +189,14 @@ Pre-2.0 implementation and phase reports are preserved under:
 - Removed overlapping sticky section-title geometry, negative tab offsets, and narrow-layout grid overflow.
 - Added strict min-width containment for grid children, fields, cards, tables, QR content, plan rows, unit grids, and modal bodies.
 - Improved tablet/mobile panel gutters, two-column small-screen workstation cards, wrapping controls, and print-safe spacing resets.
+
+## Theme readability adjustment
+- Increased light-theme secondary and tertiary text contrast across navigation, labels, help text, placeholders, metadata, and inactive controls.
+- Strengthened light-theme border separation and neutral controls without changing semantic theme colors.
+- Added explicit high-contrast Admin sidebar text, section labels, hover states, and placeholder opacity.
+- Improved dark-theme secondary/tertiary readability while preserving the established navy and violet visual system.
+
+## Vertical spacing rhythm correction
+- Added a consistent vertical rhythm between sequential Admin notices, warnings, cards, forms, and bordered sections.
+- Inline zero-margin notices can no longer collapse into the next panel.
+- Added safe scroll spacing for Admin alerts, notes, analytics panels, and major content cards.
