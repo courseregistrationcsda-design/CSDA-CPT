@@ -8,7 +8,7 @@
  * Bump CACHE on every deploy; old caches are dropped on activate.
  */
 
-var CACHE = 'csda-toolkit-2c4eda416ba7';
+var CACHE = 'csda-toolkit-cce29d4c8a22';
 
 var PRECACHE = [
   '/',
@@ -30,6 +30,7 @@ var PRECACHE = [
   '/modules/executive-intelligence.js',
   '/modules/institutional-document-center.js',
   '/modules/premium-interface.js',
+  '/modules/layout-spacing-fix.js',
   '/modules/creative-course-artworks.js',
   '/modules/launch-mode.js',
   '/modules/capacity-intelligence.js',

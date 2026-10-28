@@ -183,3 +183,9 @@ Pre-2.0 implementation and phase reports are preserved under:
 - Added complete Version 3 product, operations, data, control, troubleshooting, privacy, backup, document, TESDA, finance, academic, payroll, kiosk, and pre-deployment documentation.
 - Replaced the cluttered in-app guideline stack with a focused documentation hub: quick local Guide Search, interactive manual, PDF download, and complete Markdown documentation download.
 - Regenerated the detailed offline PDF and synchronized the guide with Stages 1–9, the 77-card Guest kiosk, and the explicit Stage 10/grading hold.
+
+## Layout spacing and containment correction
+- Added consistent interior padding around top-level quote, Admin, rental, course-editor, and enrollment panels so controls no longer sit against or over container borders.
+- Removed overlapping sticky section-title geometry, negative tab offsets, and narrow-layout grid overflow.
+- Added strict min-width containment for grid children, fields, cards, tables, QR content, plan rows, unit grids, and modal bodies.
+- Improved tablet/mobile panel gutters, two-column small-screen workstation cards, wrapping controls, and print-safe spacing resets.
